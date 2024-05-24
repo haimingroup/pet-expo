@@ -27,15 +27,15 @@
 				<view class="searchInp"><u-icon name="search"></u-icon><text>输入展品名称/公司名称</text></view>
 				<view class="searchBtn" :style="'background:'+themeColors" >搜索</view>
 			</view>
-				<view class="newsList" v-if="currentNum == 0">
-					<exhibitBox  v-for="item,index in newsList" :key="index" :item="item" />
-				</view>
-				<view class="newsList"  v-if="currentNum == 1">
-					<productBox  v-for="item,index in newsList" :key="index" :item="item" />
-				</view>
-				<u-loadmore marginTop="30" :status="status" fontSize="32" />
+			<view class="newsList" v-if="currentNum == 0">
+				<exhibitBox  v-for="item,index in newsList" :key="index" :item="item" />
+			</view>
+			<view class="newsList"  v-if="currentNum == 1">
+				<productBox  v-for="item,index in newsList" :key="index" :item="item" />
+			</view>
+			<u-loadmore marginTop="30" :status="status" fontSize="32" />
 		</view>
-		<u-back-top :scroll-top="scrollTopu" bottom="250"></u-back-top>
+			<u-back-top :scroll-top="scrollTopu" bottom="250"></u-back-top>
 		<m-tabbar name="new" ref="tabbar" native :beforeChange="onBeforeChange">
 			<template v-slot:tabbar_index_2>
 				<view class="custom_style">
