@@ -1,10 +1,10 @@
 <template>
 	<view class="page">
-		<u-navbar :fixed="true" :bgColor="bgColor">
+		<u-navbar :fixed="true"  :bgColor="bgColor">
 			<view class="navTitle" slot="left" :style="'color:' + titleColor"> 活动列表 </view>
 		</u-navbar>
 		<view class="header">
-			<image style="width: 750rpx; height: 532rpx; display: flex" :src="imgSrc" mode="scaleToFill" />
+			<image style="width: 750rpx; height: 532rpx; display: flex" :src="imgSrc" mode="aspectFill" />
 		</view>
 		<view class="content">
 			<view class="title">

@@ -1,5 +1,5 @@
 {
-	"name": "海名餐博会",
+	"name": "海名宠物展",
 	"appid": "__UNI__E217480",
 	"description": "",
 	"versionName": "1.0.0",
@@ -53,7 +53,7 @@
 				"payment": {
 					"weixin": {
 						"__platform__": ["ios", "android"],
-						"appid": "wxda3f4a5fd61ec003",
+						"appid": "wx8582966c73ac7e3b",
 						"UniversalLinks": ""
 					}
 				}
@@ -64,7 +64,7 @@
 	"quickapp": {},
 	/* 快应用特有相关 */
 	"mp-weixin": {
-		"appid": "wxda3f4a5fd61ec003",
+		"appid": "wx8582966c73ac7e3b",
 		"setting": {
 			"urlCheck": false,
 			"es6": true,

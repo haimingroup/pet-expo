@@ -105,7 +105,7 @@
 			<template v-slot:tabbar_index_2>
 				<view class="custom_style">
 					<image class="btnImg" src="../../static/tarBar/center.png" mode=""></image>
-					<text>{{ cneterTitle }}</text>
+					<view>{{ cneterTitle }}</view>
 				</view>
 			</template>                                                                                                                                                             
 		</m-tabbar>
@@ -772,6 +772,7 @@
 			border-radius: 50%;
 			width: 112rpx;
 			height: 112rpx;
+			border-collapse:collapse;
 		}
 	}
 

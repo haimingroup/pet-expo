@@ -7,7 +7,7 @@
 				<text style="margin-left: 10rpx">展商详情</text>
 			</view>
 		</u-navbar>
-		<view class="header">
+		<!-- <view class="header">
 			<u-swiper
               :list="info.imgs"
               height="422"
@@ -22,7 +22,7 @@
 						<text class="indicator-num__text">{{ currentNum + 1 }}/{{ info.imgs.length }}</text>
 					</view>
 			</u-swiper>
-		</view>
+		</view> -->
 		<view class="content">
 			<view class="info">
 				<view class="up">
@@ -86,7 +86,8 @@
 		<u-popup :show="showlp" :safeAreaInsetBottom="false" mode="center"  @close="showlp = false">
 				<view class="lpBox">
 					<!-- <lime-painter  :postInfo="postInfo" /> -->
-					<image
+					<defaultBox  :postInfo = 'postInfo' />
+					<!-- <image
 						:src="picture2"
 						style="width: 620rpx; height:900rpx;"
 						mode="scaleToFill"
@@ -107,7 +108,7 @@
 						<l-painter-text :text="postInfo.booth_no" css="position:absolute;top:476rpx;left:340rpx;color:#055739;font-size:35.2rpx"></l-painter-text>
 						<l-painter-image :src="postInfo.qr_code_mini_url" css="width: 124.8rpx;height: 124.8rpx; border-radius:50%;position:absolute;top:678.8rpx;left:80.4rpx; "/>
 					</l-painter>
-					<view class="save" :style="'background:'+ themeColors" @click="save">保存到相册</view>
+					<view class="save" :style="'background:'+ themeColors" @click="save">保存到相册</view> -->
 				</view>
 			</u-popup>
 	</view>
@@ -124,10 +125,11 @@
 		getMyTicket
 	} from "@/api/register";
 	import productBox from "../../components/productBox.vue";
+	import defaultBox from "../lpainter/default.vue";
 	import config from "@/utils/config"
 	export default {
 		components: {
-			productBox
+			productBox,defaultBox
 		},
 		data() {
 			return {
@@ -301,13 +303,14 @@
 			checkShare(){
 				this.close()
 				this.showlp = true
-				this.$refs.poster.canvasToTempFilePathSync({
-				fileType: 'jpg',
-				quality: 1,
-				success: (res) => {
-					this.picture2 = res.tempFilePath
-				}
-			})
+				console.log(this.$refs.default)
+			// 	this.$refs.poster.canvasToTempFilePathSync({
+			// 	fileType: 'jpg',
+			// 	quality: 1,
+			// 	success: (res) => {
+			// 		this.picture2 = res.tempFilePath
+			// 	}
+			// })
 			},
 			fail(v) {
 				console.log(v)
@@ -383,7 +386,7 @@
 	}
 
 	.content {
-		padding: 30rpx;
+		padding: 0 30rpx;
 		position: relative;
 	}
 
@@ -510,19 +513,7 @@
 		padding: 0;
 		line-height: 32rpx !important;
 	}
-	.lpBox{
-		width: 620rpx;
-		height: 900rpx;
-		
-	}
-	.save{
-		position: absolute;
-		bottom: -110rpx;
-		padding: 20rpx 36rpx;
-		left: 196rpx;
-		color: #FFF;
-		border-radius: 10rpx;
-	}
+
 	button::after {
     	border: none;
   	}

@@ -1,7 +1,7 @@
 <template>
   <view class="page">
     <!-- 顶部标题栏 -->
-    <u-navbar :fixed="true" :bgColor="bgColor" @leftClick="back">
+    <u-navbar :fixed="true"  :bgColor="bgColor" @leftClick="back">
       <view class="navTitle" slot="left">
         <u-icon name="arrow-left" color="#FFF"></u-icon>
         <text style="margin-left: 10rpx">观众预登记</text>

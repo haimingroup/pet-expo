@@ -7,7 +7,7 @@
 			</view>
 		</u-navbar>
 		<view class="header">
-			<image style="width: 750rpx; height: 532rpx; display: flex" :src="imgSrc" mode="scaleToFill" />
+			<image style="width: 750rpx; height: 532rpx" :src="imgSrc" mode="aspectFill" />
 		</view>
 		<view class="content">
 			<!-- 用户名称 -->

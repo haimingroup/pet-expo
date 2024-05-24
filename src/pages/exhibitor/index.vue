@@ -289,7 +289,7 @@
 					}
 						if (this.currentNum == 0) {
 							getStoreList(obj).then((res)=>{
-								this.newsList = res.data.data
+						
 								res.data.data.map((item) => {
 									this.newsList.push(item)
 								})
@@ -299,7 +299,6 @@
 							})
 						} else if (this.currentNum == 1) {
 							getGoodList(obj).then((res) => {
-								this.newsList = res.data.data
 								res.data.data.map((item) => {
 									this.newsList.push(item)
 								})

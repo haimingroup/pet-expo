@@ -10,7 +10,7 @@
     <view class="content">
       <u-swiper
               :list="info.goods_imgs"
-              height="846"
+              height="690"
               @change="change"
               :autoplay="false"
               indicatorStyle="right: 20px"
@@ -81,6 +81,7 @@ export default {
     });
     getGoodInfo({goods_id:option.id, exhibit_id:uni.getStorageSync('exhibit_id')}).then(res=>{
       this.info = res.data
+      this.info.goods_imgs.unshift(this.info.goods_img)
       uni.hideLoading();
     })
   },

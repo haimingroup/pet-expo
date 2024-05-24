@@ -97,6 +97,9 @@
                 提交
             </view>
         </view>
+        <ksp-cropper mode="ratio" :width="700" :height="700" :maxWidth="700" :maxHeight="700" :url="imgUrl"  @cancel="oncancel"  @ok="onok"></ksp-cropper>
+        <ksp-cropper mode="ratio" :width="700" :height="700" :maxWidth="700" :maxHeight="700" :url="imgsUrl" @cancel="oncancel" @ok="onok1"></ksp-cropper>
+
     </view>
 </template>
 
@@ -121,6 +124,10 @@ export default {
         tagList:[],
         fileList1: [],
         fileList2: [],
+        path:'',
+        eventArr:[],
+        imgUrl:'',
+        imgsUrl:'',
     }
     },
     onLoad(option){
@@ -147,9 +154,32 @@ export default {
         back() {
             uni.navigateBack();
         },
-        async afterRead1(event){
-            // 当设置 multiple 为 true 时, file 为数组格式，否则为对象格式
-				let lists = [].concat(event.file)
+        async changeEventArr(event){
+                event.file[0].url = this.path
+                let lists = [].concat(event)
+				
+				lists.map((item) => {
+					this[`fileList${event.name}`].push({
+						...item,
+						status: 'uploading',
+						message: '上传中'
+					})
+				})
+                let url = "data:image/jpeg;base64," + uni.getFileSystemManager().readFileSync(this.path, "base64");
+                await fileUp({type:2,img:url}).then((res)=>{
+                    this.cerform.logo = res.data.url
+                })
+                this.fileList1.splice(0, 1)
+                this.fileList1.push({
+                    status: 'success',
+                    message: '',
+                    url: this.cerform.logo
+                })
+        },
+        async changeEventArr1(event){
+                event.file[0].url = this.path
+                let lists = [].concat(event.file)
+                console.log(lists)
 				let fileListLen = this[`fileList${event.name}`].length
 				lists.map((item) => {
 					this[`fileList${event.name}`].push({
@@ -158,48 +188,45 @@ export default {
 						message: '上传中'
 					})
 				})
+              
 				for (let i = 0; i < lists.length; i++) {
                     let url = "data:image/jpeg;base64," + uni.getFileSystemManager().readFileSync(lists[i].url, "base64");
-					const result = await fileUp({type:2,img:url}).then((res)=>{
-                        console.log(res.data.url)
-                        this.cerform.goods_img = res.data.url
+					 await fileUp({type:2,img:url}).then((res)=>{
+                        this.cerform.imgs.push (res.data.url)
+                        this[`fileList${event.name}`].splice(fileListLen, 1,)
+                        this[`fileList${event.name}`].push({
+                            status: 'success',
+                            message: '',
+                            url: res.data.url
+                        })
                     })
-					let item = this[`fileList${event.name}`][fileListLen]
-					this[`fileList${event.name}`].splice(fileListLen, 1, Object.assign(item, {
-						status: 'success',
-						message: '',
-						url: result
-					}))
 					fileListLen++
 				}
-                console.log(this[`fileList${event.name}`])
+        },
+
+        onok(e) {
+            this.imgUrl = "";
+            this.path = e.path;
+            this.changeEventArr(this.eventArr)
+        },
+        onok1(e){
+            this.imgsUrl = "";
+            this.path = e.path;
+            this.changeEventArr1(this.eventArr)
+        },
+        oncancel() {
+            this.imgUrl = "";
+            this.imgsUrl = "";
+        },
+        async afterRead1(event){
+            // 当设置 multiple 为 true 时, file 为数组格式，否则为对象格式
+                this.imgUrl = event.file[0].url
+                this.eventArr = event      
         },
         async afterRead2(event){
             // 当设置 multiple 为 true 时, file 为数组格式，否则为对象格式
-				let lists = [].concat(event.file)
-				let fileListLen = this[`fileList${event.name}`].length
-				lists.map((item) => {
-					this[`fileList${event.name}`].push({
-						...item,
-						status: 'uploading',
-						message: '上传中'
-					})
-				})
-				for (let i = 0; i < lists.length; i++) {
-                    let url = "data:image/jpeg;base64," + uni.getFileSystemManager().readFileSync(lists[i].url, "base64");
-					const result = await fileUp({type:2,img:url}).then((res)=>{
-                        this.cerform.goods_imgs.push (res.data.url)
-                    })
-					let item = this[`fileList${event.name}`][fileListLen]
-					this[`fileList${event.name}`].splice(fileListLen, 1, Object.assign(item, {
-						status: 'success',
-						message: '',
-						url: result
-					}))
-					fileListLen++
-				}
-                console.log('goods_imgs',this.cerform.goods_imgs)
-                console.log('fileList',this[`fileList${event.name}`])
+                this.imgsUrl =  event.file[0].url
+                this.eventArr = event  
         },
         deletePic(event) {
             this[`fileList${event.name}`].splice(event.index, 1)

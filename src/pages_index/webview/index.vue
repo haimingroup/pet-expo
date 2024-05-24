@@ -16,7 +16,7 @@
 			if (option.url) {
 				this.Websrc = option.url;
 				this.title = option.title;
-				wx.setNavigationBarTitle({
+				uni.setNavigationBarTitle({
 					title: option.title,
 				});
 			} else {

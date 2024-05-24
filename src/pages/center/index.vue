@@ -8,7 +8,7 @@
 			</view>
 		</u-navbar>
 		<view>
-			<image class="headerImg" :src="info.exhibit_one.img" mode="scaleToFill" />
+			<image class="headerImg" :src="info.exhibit_one.img" mode="aspectFill" />
 		</view>
 		<view class="userInfo" :style="'color:'+ themeColors">
 			<view style="display: flex">
