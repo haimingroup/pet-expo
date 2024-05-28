@@ -68,7 +68,7 @@
         </view>
       </view>
       <view class="footerBtn">
-        <view class="shareBtn" :style="'color:'+ themeColors+';border-color:'+themeColors" @tap="share"> 分享好友 </view>
+        <button class="shareBtn" :style="'color:'+ themeColors+';border-color:'+themeColors" open-type="share"> 分享好友 </button>
         <!-- 暂时隐藏 -->
         <view
           v-if="exhibitId !== 4"
@@ -148,14 +148,27 @@ export default {
       uni.hideLoading();
     });
   },
+  onShareAppMessage(res) {
+			if (res.from === "button") {
+			// 来自页面内分享按钮
+			console.log(res.target);
+			}
+			return {
+			title: this.info.title,
+			path:`/pages_index/activityInfo/index?id=${this.info.activity_id}&exhibit_id=${uni.getStorageSync("exhibit_id")}`,
+			};
+
+		},
+  onShareTimeline() {
+    (res) => {
+    return {
+      title: this.info.title,
+      path:`/pages_index/activityInfo/index?id=${this.info.activity_id}&exhibit_id=${uni.getStorageSync("exhibit_id")}`,
+      imageUrl: imageUrl,
+    };
+    };
+  },
   methods: {
-    share() {
-      uni.showToast({
-        title: "敬请期待",
-        icon: "none",
-        mask: true,
-      });
-    },
     apply() {
       if (this.showapply) {
         return;
@@ -203,7 +216,11 @@ export default {
       }
     },
     back() {
-      uni.navigateBack();
+      uni.navigateBack({
+        fail:()=>{
+          uni.switchTab({ url: '/pages/index/index' })
+        }
+      });
     },
   },
 };
@@ -305,6 +322,9 @@ export default {
     line-height: 70rpx;
     background: #fff;
     border: 4rpx solid $theme-color;
+  }
+  .shareBtn::after{
+    border: none;
   }
 }
 </style>

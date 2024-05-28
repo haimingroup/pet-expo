@@ -1,21 +1,33 @@
 <script>
+import {getInfo} from "@/api/list.js";
 	export default {
-		onLaunch: function() {
+		onLaunch: function(options) {
+
 			if(uni.getStorageSync('token')){
 				if(uni.getStorageSync('defaultTim '!==false)){
-					console.log('1')
+					
 					 uni.clearStorageSync();
 				}else{
 					let timestamp = Date.now();
 				  if(uni.getStorageSync('defaultTime') < timestamp){
 					console.log(uni.getStorageSync('defaultTime') , timestamp)
-					console.log('2')
+					
 					uni.clearStorageSync();
 				  }
 				}
 			}else{
-				console.log('3')
 				  uni.clearStorageSync();
+			}
+			console.log(options.query)
+			if(options.query.scene){
+
+			}else if(options.query.exhibit_id){
+				uni.setStorageSync('exhibit_id',options.query.exhibit_id)
+				getInfo({exhibit_id:options.query.exhibit_id}).then((res)=>{
+					uni.setStorageSync("ceilingImg", res.data.img);
+					uni.setStorageSync('color', res.data.color_main);
+					uni.setStorageSync('color_d', res.data.color_deputy);
+				})
 			}
 			const updateManager = uni.getUpdateManager() // 小程序版本更新管理器
 		  	updateManager.onCheckForUpdate(res => { // 检测新版本后的回调
