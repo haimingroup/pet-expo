@@ -318,8 +318,9 @@ export default {
     border-radius: 100px;
     width: 300rpx;
     height: 70rpx;
-    text-align: center;
-    line-height: 70rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: #fff;
     border: 4rpx solid $theme-color;
   }

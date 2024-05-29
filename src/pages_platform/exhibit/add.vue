@@ -27,6 +27,15 @@
                     </u-form-item>
                 </view>
                 <view class="box">
+                    <u-form-item label="产品规格" ref="item1">
+                        <u--input
+                                v-model="cerform.goods_specs"
+                                placeholder="请输入信息"
+                                border="bottom"
+                        ></u--input>
+                    </u-form-item>
+                </view>
+                <view class="box">
                     <u-form-item label="产品简介">
                         <u--textarea v-model="cerform.goods_dec"  border="bottom" placeholder="请输入内容" autoHeight ></u--textarea>
                     </u-form-item>
@@ -34,10 +43,10 @@
                 <view class="box" @tap="getTag">
                     <u-form-item label="产品标签">
                         <u--input
-                                v-model="cerform.tag_name"
-                                placeholder="请输入信息"
-                                border="bottom"
-                                disabled
+                            v-model="cerform.tag_name"
+                            placeholder="请输入信息"
+                            border="bottom"
+                            disabled
                         ></u--input>
                     </u-form-item>
                     <u-popup 
@@ -119,6 +128,7 @@ export default {
             goods_img:'',
             goods_imgs:[],
             tag_name:'',
+            goods_specs:'',
         },
         tagList:[],
         fileList1: [],
@@ -171,7 +181,7 @@ export default {
 				for (let i = 0; i < lists.length; i++) {
                     let url = "data:image/jpeg;base64," + uni.getFileSystemManager().readFileSync(lists[i].url, "base64");
 					 await fileUp({type:2,img:url}).then((res)=>{
-                        this.cerform.imgs.push (res.data.url)
+                        this.cerform.goods_imgs.push (res.data.url)
                         this[`fileList${event.name}`].splice(fileListLen, 1,)
                         this[`fileList${event.name}`].push({
                             status: 'success',

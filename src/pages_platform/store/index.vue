@@ -3,7 +3,7 @@
         <u-navbar :fixed="true" :bgColor="bgColor" placeholder  @leftClick="back">
 			<view class="navTitle" slot="left" :style="'color:' + titleColor"> 
                 <u-icon name="arrow-left" color="#FFF"></u-icon>
-                <text style="margin-left: 10rpx">店铺信息</text>
+                <text style="margin-left: 10rpx">展商信息</text>
             </view>
 		</u-navbar>
         <view class="content">
@@ -26,10 +26,22 @@
                    
                 </view>
                 <view class="box">
-                    <u-form-item label="品牌名称" ref="item1">
+                    <u-form-item label="展商名称" ref="item1">
                         <u--input
-                                v-model="cerform.name"
+                            v-model="cerform.name"
+                            placeholder="13字以内海报显示效果最好"
+                            border="bottom"
+                            :disabled ='disable'
+                        ></u--input>
+                        <text style="margin-left:130rpx;color:#CCC;font-size: 20rpx">最多输入20字</text>
+                    </u-form-item>
+                </view>
+                <view class="box">
+                    <u-form-item label="企业/品牌简称" ref="item1">
+                        <u--input
+                                v-model="cerform.brand_name"
                                 placeholder="请输入信息"
+                                maxlength="8"
                                 border="bottom"
                                 :disabled ='disable'
                         ></u--input>
@@ -130,7 +142,7 @@ export default {
     return {
         themeColors: uni.getStorageSync('color'),
         bgColor: uni.getStorageSync('color'),
-        cerform:{name:'',imgs:[],logo:'',dec:'' }, // tag_name:''
+        cerform:{name:'',brand_name:'',imgs:[],logo:'',dec:'' }, // tag_name:''
         content:'店铺修改后需要重新审核，店铺自动下架，是否确认修改？',
         info:{},
         tagList:[],

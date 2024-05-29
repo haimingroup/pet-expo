@@ -76,8 +76,8 @@
 					<view class="leftTitle">
 						<view class="colorBox" :style="'background:'+ themeColors" />
 						<text>展商推荐</text>
-					</view>
-					<view class="rightTitle" @tap="toExhibitor">
+					</view> 
+					<view class="rightTitle" :style="'color:'+ themeColors" @tap="toExhibitor">
 						更多 >>>
 					</view>
 				</view>
@@ -725,7 +725,6 @@
 
 				.rightTitle {
 					font-size: 24rpx;
-					color: #ACD41D;
 				}
 
 			}

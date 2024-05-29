@@ -39,7 +39,7 @@
 					</u-grid-item>
 				</u-grid>
 			</view>
-			<view class="footer" v-if="userInfo.store_exhibit">
+			<view class="footer" v-if="userInfo.type == 1">
 				<view>平台信息</view>
 				<u-cell-group :border="false">
 					<u-cell  @tap="navigator('/pages_platform/certification/index')" title="资质信息" :isLink="true">

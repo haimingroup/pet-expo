@@ -29,11 +29,14 @@
             <view class="box" v-for="item,index in goodList" :key="index">
                 <view class="boxTitle">{{item.goods_name}}</view>
                 <view class="boxContent">
-                    <image
+                    <view class="logo">
+                        <image
                         class="logo"
                         :src="item.goods_img"
                         mode="scaleToFill"
                     />
+                    </view>
+                   
                     <view class="intro">{{item.goods_dec}}</view>
                 </view>
                 <view class="boxFooter">
@@ -43,6 +46,7 @@
                     <view class="btn" v-if="showBtn ==3" style="background-color: #07C160;margin-left: 24rpx" @tap="opGood(2,item.id)">上架</view>
                 </view>
             </view>
+            <u-loadmore marginTop="30" v-if="!showqs" :status="status" fontSize="32" />
             <view class="list" v-if="showqs">
                 <image
                     class="quesheng"
@@ -51,11 +55,12 @@
                 />
             </view>
         </view>
+        <u-back-top :scroll-top="scrollTop" bottom="250"></u-back-top>
     </view>
 </template>
 
 <script>
-import {getMyGoodList,opMyGood} from "@/api/v2"
+import { getMyGoodList , opMyGood } from "@/api/v2"
 import qusheng from "@/static/quesheng.png"
 export default {
     data() {
@@ -93,9 +98,8 @@ export default {
         },
       ],
       goodList:[],
+      scrollTop:"",
       upstatus:'loadmore',
-      waitstatus:'loadmore',
-      status:'loadmore',
     }
     },
     onShow() {
@@ -107,10 +111,17 @@ export default {
             this.goodList = res.data.data
             if(res.data.data.length == 0){
                     this.showqs = true
+            }else if(res.data.data.length < 15){
+                this.upstatus = "nomore";
             }
+          
             uni.hideLoading();
         })
     },
+    onPageScroll(event) {
+        //顶部导航渐变 从无到有
+        this.scrollTop = event.scrollTop; // 更新页面滚动高度
+	},
     onReachBottom(){
 		this.scrolltolower()
 	},
@@ -143,22 +154,17 @@ export default {
                 status:this.showBtn,
                 page:this.page
             }).then((res)=>{
-                this.goodList = res.data.data
-               
+                res.data.data.map((item)=>{
+                    this.goodList.push(item)
+                })  
                 if (res.data.data.length < 15) {
-                    
-                    if ( this.showBtn == 0) {
                         this.upstatus = "nomore";
-                    } else if ( this.showBtn == 1) {
-                        this.waitstatus = "nomore";
-                    }else if ( this.showBtn == 2) {
-                        this.status = "nomore";
-                    }
                     }
                 uni.hideLoading();
                 })
        },
         clickTabs(e) {
+            this.upstatus = "loadmore";
             this.goodList.length =0
             this.showBtn = e.status;
             getMyGoodList({
@@ -172,13 +178,7 @@ export default {
                         this.showqs = false
                     }
                     if (res.data.data.length < 15) {
-                        if (e.index == 0) {
-                            this.upstatus = "nomore";
-                        } else if (e.index == 1) {
-                            this.waitstatus = "nomore";
-                        }else if (e.index == 2) {
-                            this.status = "nomore";
-                        }
+                        this.upstatus = "nomore";
 					}
                     uni.hideLoading();
                  })
@@ -243,6 +243,7 @@ export default {
         background: #FFF;
         border-radius: 20rpx;
         padding:20rpx 32rpx;
+        margin-bottom: 20rpx;
         .boxTitle{
             font-size: 28rpx;
             line-height: 40rpx;
@@ -252,7 +253,7 @@ export default {
             display: flex;
             align-items: center;
             .logo{
-                width: 168rpx;
+                width: 168rpx !important;
                 height: 168rpx;
                 border-radius: 20rpx;
             }

@@ -27,6 +27,15 @@
                     </u-form-item>
                 </view>
                 <view class="box">
+                    <u-form-item label="产品规格" ref="item1">
+                        <u--input
+                                v-model="cerform.goods_specs"
+                                placeholder="请输入信息"
+                                border="bottom"
+                        ></u--input>
+                    </u-form-item>
+                </view>
+                <view class="box">
                     <u-form-item label="产品简介">
                         <u--textarea v-model="cerform.goods_dec"  border="bottom" placeholder="请输入内容" autoHeight ></u--textarea>
                     </u-form-item>
@@ -119,6 +128,7 @@ export default {
             goods_img:'',
             goods_imgs:[],
             tag_name:'',
+            goods_specs:'',
             id:'',
         },
         tagList:[],
@@ -135,8 +145,9 @@ export default {
         getMyGoodInfo({
             id: this.cerform.id
         }).then((res=>{
-            const{goods_name,goods_dec, goods_img,goods_imgs,tag_name,id} = res.data
+            const{goods_name,goods_dec,goods_specs, goods_img,goods_imgs,tag_name,id} = res.data
             this.cerform ={
+                goods_specs:goods_specs,
                 goods_name:goods_name,
                 goods_dec:goods_dec,
                 goods_img:goods_img,
@@ -192,7 +203,7 @@ export default {
 				for (let i = 0; i < lists.length; i++) {
                     let url = "data:image/jpeg;base64," + uni.getFileSystemManager().readFileSync(lists[i].url, "base64");
 					 await fileUp({type:2,img:url}).then((res)=>{
-                        this.cerform.imgs.push (res.data.url)
+                        this.cerform.goods_imgs.push (res.data.url)
                         this[`fileList${event.name}`].splice(fileListLen, 1,)
                         this[`fileList${event.name}`].push({
                             status: 'success',

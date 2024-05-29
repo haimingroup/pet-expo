@@ -21,7 +21,8 @@ import {getInfo} from "@/api/list.js";
 			console.log(options.query)
 			if(options.query.scene){
 
-			}else if(options.query.exhibit_id){
+			}
+			if(options.query.exhibit_id){
 				uni.setStorageSync('exhibit_id',options.query.exhibit_id)
 				getInfo({exhibit_id:options.query.exhibit_id}).then((res)=>{
 					uni.setStorageSync("ceilingImg", res.data.img);
