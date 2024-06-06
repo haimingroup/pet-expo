@@ -85,7 +85,7 @@ export default {
     width: 160rpx;
     margin-right: 30rpx;
     height: 160rpx;
-    background: #333;
+    
     border-radius: 10rpx;
     overflow: hidden;
     image {

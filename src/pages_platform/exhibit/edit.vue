@@ -98,6 +98,8 @@
                             :previewFullImage="true"
                         ></u-upload>
                     </u-form-item>
+                    <text style="margin-left:130rpx;color:#CCC;font-size: 20rpx">因为图片需要裁剪，请一次上传一张</text>
+
                 </view>
              </u--form>
         </view>
@@ -165,65 +167,38 @@ export default {
         back() {
             uni.navigateBack();
         },
-        async changeEventArr(event){
-                event.file[0].url = this.path
-                let lists = [].concat(event)
-				
-				lists.map((item) => {
-					this[`fileList${event.name}`].push({
-						...item,
-						status: 'uploading',
-						message: '上传中'
-					})
-				})
-                let url = "data:image/jpeg;base64," + uni.getFileSystemManager().readFileSync(this.path, "base64");
+        async changeEventArr(event,status){
+                event.file.url = this.path
+                let fileListLen = this[`fileList${event.name}`].length
+				this[`fileList${event.name}`].push({
+                    file:event.file,
+                    status: 'uploading',
+                    message: '上传中'
+                })
+                let url = "data:image/jpeg;base64," + uni.getFileSystemManager().readFileSync(event.file.url, "base64");
                 await fileUp({type:2,img:url}).then((res)=>{
-                    this.cerform.logo = res.data.url
-                })
-                this.fileList1.splice(0, 1)
-                this.fileList1.push({
-                    status: 'success',
-                    message: '',
-                    url: this.cerform.logo
-                })
-        },
-        async changeEventArr1(event){
-                event.file[0].url = this.path
-                let lists = [].concat(event.file)
-                console.log(lists)
-				let fileListLen = this[`fileList${event.name}`].length
-				lists.map((item) => {
-					this[`fileList${event.name}`].push({
-						...item,
-						status: 'uploading',
-						message: '上传中'
-					})
-				})
-              
-				for (let i = 0; i < lists.length; i++) {
-                    let url = "data:image/jpeg;base64," + uni.getFileSystemManager().readFileSync(lists[i].url, "base64");
-					 await fileUp({type:2,img:url}).then((res)=>{
-                        this.cerform.goods_imgs.push (res.data.url)
-                        this[`fileList${event.name}`].splice(fileListLen, 1,)
-                        this[`fileList${event.name}`].push({
-                            status: 'success',
-                            message: '',
-                            url: res.data.url
-                        })
+                    if(status == 0 ){
+                        this.cerform.goods_img = res.data.url
+                    }else if(status == 1){
+                        this.cerform.goods_imgs.push(res.data.url)
+                    }
+                    this[`fileList${event.name}`].splice(fileListLen, 1,)
+                    this[`fileList${event.name}`].push({
+                        status: 'success',
+                        message: '',
+                        url: res.data.url
                     })
-					fileListLen++
-				}
+                })
         },
-
         onok(e) {
             this.imgUrl = "";
             this.path = e.path;
-            this.changeEventArr(this.eventArr)
+            this.changeEventArr(this.eventArr,0)
         },
         onok1(e){
             this.imgsUrl = "";
             this.path = e.path;
-            this.changeEventArr1(this.eventArr)
+            this.changeEventArr(this.eventArr,1)
         },
         oncancel() {
             this.imgUrl = "";
@@ -231,12 +206,12 @@ export default {
         },
         async afterRead1(event){
             // 当设置 multiple 为 true 时, file 为数组格式，否则为对象格式
-                this.imgUrl = event.file[0].url
+                this.imgUrl = event.file.url
                 this.eventArr = event      
         },
         async afterRead2(event){
             // 当设置 multiple 为 true 时, file 为数组格式，否则为对象格式
-                this.imgsUrl =  event.file[0].url
+                this.imgsUrl =  event.file.url
                 this.eventArr = event  
         },
         deletePic(event) {
@@ -348,15 +323,16 @@ export default {
     }
     .popBox{
         display: flex;
-        height: 180rpx;
+        height: 48vh;
         width: 686rpx;
         overflow: auto;
         flex-wrap: wrap;
         padding: 32rpx;
-        justify-content: space-between;
-        align-items: center;
+        justify-content: flex-start;
         .tagBox{
-            width: 100rpx;
+            width: 150rpx;
+            height: 54rpx;
+            line-height: 54rpx;
             text-align: center;
             padding: 20rpx 40rpx;
             border: 2rpx solid #ccc;

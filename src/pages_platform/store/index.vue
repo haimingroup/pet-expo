@@ -33,8 +33,8 @@
                             border="bottom"
                             :disabled ='disable'
                         ></u--input>
-                        <text style="margin-left:130rpx;color:#CCC;font-size: 20rpx">最多输入20字</text>
                     </u-form-item>
+                    <text style="margin-left:130rpx;color:#CCC;font-size: 20rpx">最多输入20字</text>
                 </view>
                 <view class="box">
                     <u-form-item label="企业/品牌简称" ref="item1">
@@ -93,7 +93,6 @@
                             name="1"
                             width="144"
 	                        height="144"
-                            multiple
                             :maxCount="1"
                             :previewFullImage="true"
                         ></u-upload>
@@ -101,8 +100,8 @@
                 </view>
                 <view class="box">
                     <u-form-item label="公司图片">
-                        <view style="display:flex" v-if="disable">
-                            <img  v-for="item,index in fileList2" :key="index" :src="item.url"  style="width:144rpx;height:144rpx;" alt="">
+                        <view style="display:flex;" v-if="disable">
+                            <img  v-for="item,index in fileList2" :key="index" :src="item.url"  style="width:144rpx;height:144rpx;margin-right: 20rpx;" alt="">
                         </view>
                         <u-upload
                             v-if="!disable"
@@ -112,10 +111,10 @@
                             name="2"
                             width="144"
 	                        height="144"
-                            multiple
                             :maxCount="3"
                             :previewFullImage="true"
                         ></u-upload>
+                        <text style="margin-left:130rpx;color:#CCC;font-size: 20rpx">因为图片需要裁剪，请一次上传一张</text>
                     </u-form-item>
                 </view>
              </u--form>
@@ -164,8 +163,8 @@ export default {
 			});
         getMyStore({}).then((res)=>{
             this.info = res.data
-            const { name,logo,imgs,dec} =res.data
-            this.cerform = {name:name,logo:logo,imgs:imgs,dec:dec}
+            const { name,logo,imgs,dec,brand_name} =res.data
+            this.cerform = {name:name,logo:logo,imgs:imgs,dec:dec,brand_name:brand_name}
             this.fileList1.push({url:this.cerform.logo,type: "image"})
             for(let i in this.cerform.imgs){
                 this.fileList2.push({url:this.cerform.imgs[i],type: "image"})
@@ -177,75 +176,52 @@ export default {
         })
     },
     methods:{
-        async changeEventArr(event){
-                event.file[0].url = this.path
-                let lists = [].concat(event)
-				
-				lists.map((item) => {
-					this[`fileList${event.name}`].push({
-						...item,
-						status: 'uploading',
-						message: '上传中'
-					})
-				})
-                let url = "data:image/jpeg;base64," + uni.getFileSystemManager().readFileSync(this.path, "base64");
+        async changeEventArr(event,status){
+                event.file.url = this.path
+                let fileListLen = this[`fileList${event.name}`].length
+				this[`fileList${event.name}`].push({
+                    file:event.file,
+                    status: 'uploading',
+                    message: '上传中'
+                })
+                let url = "data:image/jpeg;base64," + uni.getFileSystemManager().readFileSync(event.file.url, "base64");
                 await fileUp({type:1,img:url}).then((res)=>{
-                    this.cerform.logo = res.data.url
-                })
-                this.fileList1.splice(0, 1)
-                this.fileList1.push({
-                    status: 'success',
-                    message: '',
-                    url: this.cerform.logo
-                })
-        },
-        async changeEventArr1(event){
-                event.file[0].url = this.path
-                let lists = [].concat(event.file)
-                console.log(lists)
-				let fileListLen = this[`fileList${event.name}`].length
-				lists.map((item) => {
-					this[`fileList${event.name}`].push({
-						...item,
-						status: 'uploading',
-						message: '上传中'
-					})
-				})
-              
-				for (let i = 0; i < lists.length; i++) {
-                    let url = "data:image/jpeg;base64," + uni.getFileSystemManager().readFileSync(lists[i].url, "base64");
-					 await fileUp({type:1,img:url}).then((res)=>{
+                    if(status == 0 ){
+                        this.cerform.logo = res.data.url
+                    }else if(status == 1){
                         this.cerform.imgs.push (res.data.url)
-                        this[`fileList${event.name}`].splice(fileListLen, 1,)
-                        this[`fileList${event.name}`].push({
-                            status: 'success',
-                            message: '',
-                            url: res.data.url
-                        })
+                    }
+                    this[`fileList${event.name}`].splice(fileListLen, 1,)
+                    this[`fileList${event.name}`].push({
+                        status: 'success',
+                        message: '',
+                        url: res.data.url
                     })
-					fileListLen++
-				}
+                })
         },
-      
-     
         onok(ev) {
             this.logoUrl = "";
             this.path = ev.path;
-            this.changeEventArr(this.eventArr)
+            this.changeEventArr(this.eventArr,0)
         },
         onok1(e){
             this.imgsUrl = "";
             this.path = e.path;
-            this.changeEventArr1(this.eventArr)
+            this.changeEventArr(this.eventArr,1)
+        },
+        oncancel() {
+            this.logoUrl = "";
+            this.imgsUrl = "";
         },
          afterRead1(event){
             // 当设置 multiple 为 true 时, file 为数组格式，否则为对象格式
-                this.logoUrl = event.file[0].url
+                this.logoUrl = event.file.url
                 this.eventArr = event       
         },
          afterRead2(event){
             // 当设置 multiple 为 true 时, file 为数组格式，否则为对象格式
-                this.imgsUrl =  event.file[0].url
+                console.log(event)
+                this.imgsUrl =  event.file.url
                 this.eventArr = event       
         },
         deletePic(event) {
@@ -275,12 +251,14 @@ export default {
          submit(){
             this.cerform.imgs = this.cerform.imgs.join(',')
             saveMyStore(this.cerform).then((res)=>{
-                if(res.code ==0){
+                if(res.code == 0){
                     uni.showToast({
                         title: res.msg,
                         icon: 'none',
                         mask: true
                     })
+                    this.cerform.imgs = this.cerform.imgs.split(',')
+                    console.log(this.cerform.imgs)
                 }else{
                     uni.showToast({
                         title: '添加成功,等待审核',
@@ -299,10 +277,7 @@ export default {
           this.showPop = false
           // console.log('close');
         },
-        oncancel() {
-            this.logoUrl = "";
-            this.imgsUrl = "";
-        },
+       
         back() {
             uni.navigateBack();
         },

@@ -47,7 +47,7 @@
 							<view :style="'background-image:url('+cerSrc+');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-position: center center;background-repeat:no-repeat'" ></view>
 						</view>
 					</u-cell>
-					<u-cell  @tap="navigator('/pages_platform/store/index')" title="店铺信息" :isLink="true">
+					<u-cell  @tap="navigator('/pages_platform/store/index')" title="展商信息" :isLink="true">
 						<view slot="icon">
 							<view :style="'background-image:url('+storeSrc+');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-position: center center;background-repeat:no-repeat'" ></view>
 						</view>

@@ -42,7 +42,11 @@
 		methods: {
 			back() {
 				uni.navigateBack({
-					delta: 1
+					delta: 1,
+					fail:()=>{
+						uni.switchTab('/pages/index/index')
+					}
+					
 				});
 			},
 			chooseavatar(e) {

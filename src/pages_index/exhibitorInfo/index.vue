@@ -85,30 +85,9 @@
 		</view>
 		<u-popup :show="showlp" :safeAreaInsetBottom="false" mode="center"  @close="showlp = false">
 				<view class="lpBox">
-					<!-- <lime-painter  :postInfo="postInfo" /> -->
-					<defaultBox  :postInfo = 'postInfo' />
-					<!-- <image
-						:src="picture2"
-						style="width: 620rpx; height:900rpx;"
-						mode="scaleToFill"
-					/>
-					<l-painter css="width: 620rpx; height:900rpx; " 
-						custom-style="position: fixed; left: 200%"
-						@fail="fail"
-						@done="done"
-						pathType="url"
-						ref="poster"
-						performance
-					>
-						<l-painter-image :src="postInfo.bg_img" css="width: 620rpx; height:900rpx; position:absolute; "/>
-						<l-painter-image :src="postInfo.store_one.logo" css="width: 72rpx;  height: 72rpx;position:absolute;top:295.2rpx;left:166rpx; "/>
-						<l-painter-view  css="position:absolute;top:388.2rpx; left:140rpx;width:338rpx;height:59.2rpx;line-height:59.2rpx;text-align:center">
-							<l-painter-text css="color:#055739;font-size:25.6rpx;" :text="postInfo.store_one.company_name" ></l-painter-text>
-						</l-painter-view>
-						<l-painter-text :text="postInfo.booth_no" css="position:absolute;top:476rpx;left:340rpx;color:#055739;font-size:35.2rpx"></l-painter-text>
-						<l-painter-image :src="postInfo.qr_code_mini_url" css="width: 124.8rpx;height: 124.8rpx; border-radius:50%;position:absolute;top:678.8rpx;left:80.4rpx; "/>
-					</l-painter>
-					<view class="save" :style="'background:'+ themeColors" @click="save">保存到相册</view> -->
+					<defaultBox v-if="postInfo.bg_type === 1" ref='child'/>
+					<cw v-else-if="postInfo.bg_type === 3" ref='child1'/>
+					
 				</view>
 			</u-popup>
 	</view>
@@ -126,10 +105,11 @@
 	} from "@/api/register";
 	import productBox from "../../components/productBox.vue";
 	import defaultBox from "../lpainter/default.vue";
+	import cw from "../lpainter/cw2.vue";
 	import config from "@/utils/config"
 	export default {
 		components: {
-			productBox,defaultBox
+			productBox,defaultBox,cw
 		},
 		data() {
 			return {
@@ -199,9 +179,28 @@
 						page:'pages_index/exhibitorInfo/index'
 				}).then((res)=>{
 					this.postInfo = res.data
+					let num = this.postInfo.store_one.name.length
+					if(num > 13){
+						this.fontSize = 16.6
+						let dValue = num - 13
+						if( dValue > 7){
+							this.fontSize = 25.6
+							this.postInfo.store_one.name = this.postInfo.store_one.name.substr(0,12)+'...'
+						}
+					}
+				
+					if(this.postInfo.bg_type === 1){
+						this.$nextTick(()=>{
+							this.$refs.child.postInfo  = this.postInfo
+						})
+					}else if(this.postInfo.bg_type === 3){
+						this.$nextTick(()=>{
+							this.$refs.child1.postInfo  = this.postInfo
+						})
+					}
 				})
 			})
-
+			
 		},
 		onShareAppMessage(res) {
 			console.log(res)
@@ -303,48 +302,7 @@
 			checkShare(){
 				this.close()
 				this.showlp = true
-				console.log(this.$refs.default)
-			// 	this.$refs.poster.canvasToTempFilePathSync({
-			// 	fileType: 'jpg',
-			// 	quality: 1,
-			// 	success: (res) => {
-			// 		this.picture2 = res.tempFilePath
-			// 	}
-			// })
-			},
-			fail(v) {
-				console.log(v)
-			},
-			done(v) {
-				console.log('绘制完成:',v)
-			},
-			save() {
-				this.$refs.poster.canvasToTempFilePathSync({
-					fileType: 'jpg',
-					quality: 1,
-					success: (res) => {
-						console.log(res.tempFilePath)
-						this.picture2 = res.tempFilePath
-						this.saveImage()
-					},
-					fail(e) {
-						console.log('???????????',e)
-					}
-				})
-			},
-			// 保存图征
-			saveImage() {
-				uni.saveImageToPhotosAlbum({
-					filePath: this.picture2,
-					success(res) {
-						uni.showToast({
-							title: '已保存到相册',
-							icon: 'success',
-							duration: 2000
-						});
-					},
-				});
-				
+				console.log()
 			},
 			open() {
 			},
@@ -354,7 +312,13 @@
 			},
 			back() {
 				uni.setStorageSync('current',0)
-				uni.navigateBack();
+				uni.navigateBack(
+					{
+						fail:()=>{
+							uni.switchTab('/pages/exhibitor/index')
+						}
+					}
+				);
 			},
 		},
 	};
@@ -386,7 +350,7 @@
 	}
 
 	.content {
-		padding: 0 30rpx;
+		padding: 30rpx;
 		position: relative;
 	}
 

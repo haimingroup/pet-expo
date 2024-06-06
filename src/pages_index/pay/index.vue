@@ -107,6 +107,7 @@
 import {getOpenid,ticket,getTicketOrderInfo,verifyDisCode} from '@/api/pay.js';
 import {getMyTicket} from "@/api/register";
 import {getInfo} from "@/api/list.js";
+import log from '@/log.js';
 import config from "@/utils/config";
 export default {
     data() {
@@ -267,8 +268,41 @@ export default {
                             });
 						})
              },
+             //腾讯广告
+			tencent(){
+                let time = new Date
+                log.info(uni.getStorageSync("gdt_vid"))
+				uni.request({
+					url:"http://tracking.e.qq.com/conv",
+					method:'POST',
+					header:{'Content-Type' : 'application/json' ,'cache-control': 'no-cache'},
+					data:{
+						"actions":[{
+        							"outer_action_id":"outer_action_identity",// 选填，若上报可能有重复请填写该id，系统会根据该ID进行去重，详见FAQ
+       								"action_time":time,
+        							"user_id":{//user_id，可采集到的设备标示
+        								"wechat_unionid":uni.getStorageSync("uniond"),//当为小程序类、公众号和企业微信转化时，此字段与wechat_openid必传其一
+        								"wechat_app_id":"wx8582966c73ac7e3b",//用户发生该行为对应的小程序appid，该字段必填，并确保该appid已对该账户进行了授权（请参考帮助中心-转化归因使用指南-微信小程序转化归因操作手册中的appid授权部分）
+        							},
+       								"action_type":"RESERVATION", // 必填 行为类型
+        							"trace": {
+        								"click_id":uni.getStorageSync("gdt_vid") // 必填 click_id
+        							},
+
+								}]
+						},
+                    success:(res)=>{
+                        console.log(res)
+                        log.info(res)
+                        
+                    }
+				})
+			},
              getTicketInfo(){
                 getTicketOrderInfo({exhibit_id:uni.getStorageSync("exhibit_id")}).then((res)=>{
+                if(uni.getStorageSync("gdt_vid")){
+                    this.tencent()
+                }
                 this.ticketInfo = res.data
                 this.showList=[
                     {name: '支付状态',value: '已支付'},

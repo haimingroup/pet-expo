@@ -172,7 +172,11 @@ export default {
     },
     back() {
       uni.setStorageSync('current',1)
-      uni.navigateBack();
+      uni.navigateBack({
+						fail:()=>{
+							uni.switchTab('/pages/exhibitor/index')
+						}
+					});
     },
   },
 };

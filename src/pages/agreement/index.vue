@@ -48,17 +48,13 @@
 				
 			};
 		},
-		onLoad(option) {
-			const scene = decodeURIComponent(option.scene)
-			uni.setStorageSync('scene', scene)
-		},
 		onShow(){
 			this.getSence()
 		},
 		methods: {
 			getSence(){
 				if(uni.getStorageSync('src')){
-					this.src =uni.getStorageSync('src')
+					this.src = uni.getStorageSync('src')
 				}
 				if(!uni.getStorageSync('scene')){
 					this.getSence()
@@ -76,7 +72,6 @@
 						uni.hideLoading();
 					})
 				}
-				
 			},
 			toHome() {
 				uni.switchTab({

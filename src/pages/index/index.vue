@@ -219,7 +219,11 @@
 				this.$refs.tabbar.reload();
 			});
 		},
-		onLoad() {
+		onLoad(options) {
+			console.log(options)
+			if(options.gdt_vid){
+				uni.setStorageSync("gdt_vid", options.gdt_vid)
+			}
 			this.getExhibitorList()
 			newsGetCate({
 					obj_id: config.obj_id,
@@ -315,6 +319,7 @@
 					}
 				})
 			},
+			
 			//跳转事件
 			navigator(url) {
 				uni.navigateTo({
