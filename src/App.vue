@@ -1,8 +1,9 @@
 <script>
 import {getInfo} from "@/api/list.js";
+import log from '@/log.js';
 	export default {
 		onLaunch: function(options) {
-
+			log.info(options.query)
 			if(uni.getStorageSync('token')){
 				if(uni.getStorageSync('defaultTim '!==false)){
 					
