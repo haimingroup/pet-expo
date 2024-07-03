@@ -65,6 +65,22 @@
 
 				</u-cell-group>
 			</view>
+			<view class="footer" v-if="userInfo.store_exhibit" >
+				<view>参展服务</view>
+				<u-cell-group :border="false">
+					<u-cell  @tap="navigator('/pages_platform/meiban/index')" title="楣板提报" :isLink="true">
+						<view slot="icon">
+							<view :style="'background-image:url('+mSrc+');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-position: center center;background-repeat:no-repeat'" ></view>
+						</view>
+					</u-cell>
+					<u-cell  @tap="navigator('/pages_platform/certificate/index')" title="展商证件" :border="false"  :isLink="true">
+						<view slot="icon">
+							<view :style="'background-image:url('+cersSrc+');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-position: center center;background-repeat:no-repeat'" ></view>
+						</view>
+					</u-cell>
+				</u-cell-group>
+			</view>
+			
 			<view class="footer">
 				<u-cell-group :border="false">
 					<u-cell @tap="navigator('/pages_index/mine/team/index')" title="团队排行" :isLink="true">
@@ -139,6 +155,13 @@
 				//顶部标题栏背景色
 				bgColor: "rgba(0,0,0,0)",
 				userInfo: {},
+				//参展服务
+				//参赛信息
+				matSrc:'<svg width="18.245117" height="20.000000" viewBox="0 0 18.2451 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path id="Vector" d="M9.22 0C4.76 0 1.13 3.63 1.13 8.1C1.13 9.68 1.59 11.17 2.39 12.42C2.68 12.88 3.01 13.31 3.39 13.7L3.7 14.01C3.8 14.09 3.89 14.17 3.99 14.27C4.44 14.64 4.94 14.98 5.47 15.26C5.6 15.33 5.73 15.38 5.86 15.45C5.99 15.51 6.12 15.57 6.26 15.62C6.73 15.81 7.23 15.96 7.74 16.04C8.22 16.13 8.71 16.18 9.22 16.18C9.74 16.18 10.24 16.13 10.73 16.04C11.25 15.95 11.74 15.81 12.21 15.62L12.21 15.6C12.34 15.56 12.48 15.5 12.61 15.43C12.74 15.37 12.87 15.31 13 15.25C13.03 15.23 13.05 15.22 13.08 15.21C13.43 15.01 13.76 14.8 14.07 14.58C14.2 14.47 14.32 14.37 14.44 14.28C14.55 14.17 14.66 14.09 14.77 13.99C14.87 13.88 14.98 13.78 15.08 13.67C15.45 13.29 15.78 12.87 16.08 12.4C16.86 11.15 17.32 9.67 17.32 8.1C17.32 3.63 13.69 0 9.22 0ZM13.06 7.48L11.47 9.05C11.4 9.11 11.37 9.2 11.39 9.31L11.77 11.5C11.81 11.74 11.56 11.91 11.34 11.81L9.37 10.77C9.28 10.73 9.18 10.73 9.09 10.77L7.12 11.81C6.9 11.91 6.65 11.74 6.69 11.5L7.07 9.31C7.08 9.2 7.05 9.11 6.99 9.05L5.39 7.48C5.22 7.32 5.31 7.03 5.55 6.98L7.76 6.66C7.85 6.65 7.93 6.6 7.98 6.51L8.96 4.51C9.07 4.29 9.38 4.29 9.49 4.51L10.47 6.51C10.52 6.6 10.6 6.65 10.69 6.66L12.9 6.98C13.14 7.03 13.23 7.32 13.06 7.48Z" fill="#ACD41D" fill-opacity="1.000000" fill-rule="nonzero"/><path id="Vector" d="M2.87 14.58C2.49 14.22 2.14 13.81 1.84 13.37L0.1 16.39C-0.04 16.63 -0.04 16.92 0.11 17.16C0.25 17.39 0.49 17.53 0.79 17.51L3.25 17.38L4.37 19.58C4.49 19.82 4.74 19.99 5.02 20C5.02 20 5.03 20 5.04 20C5.3 20 5.55 19.85 5.69 19.61L7.22 16.95C6.72 16.84 6.23 16.7 5.76 16.5C4.67 16.04 3.69 15.39 2.87 14.58Z" fill="#ACD41D" fill-opacity="1.000000" fill-rule="nonzero"/><path id="Vector" d="M18.15 16.2L16.44 13C16.14 13.46 15.81 13.89 15.43 14.27C14.64 15.14 13.69 15.82 12.64 16.29C12.19 16.51 11.72 16.66 11.24 16.78L12.73 19.59C12.86 19.85 13.1 20 13.36 20C13.36 20 13.37 20 13.38 20C13.64 19.98 13.88 19.82 14 19.56L15.09 17.24L17.48 17.38C17.76 17.4 17.99 17.25 18.14 17.01C18.27 16.76 18.27 16.45 18.15 16.2Z" fill="#ACD41D" fill-opacity="1.000000" fill-rule="nonzero"/></svg>',
+				 //楣板提交
+				 mSrc:'<svg width="20.000000" height="18.110107" viewBox="0 0 20 18.1101" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path id="Vector" d="M17.63 8.42L12.16 2.97C12.24 2.76 12.28 2.53 12.28 2.29C12.28 1.03 11.25 0 10 0C8.74 0 7.71 1.03 7.71 2.29C7.71 2.51 7.75 2.7 7.8 2.9L2.27 8.43C2.26 8.43 2.26 8.43 2.26 8.43C0.98 8.68 0 9.83 0 11.2L0 15.31C0 16.85 1.25 18.11 2.81 18.11L17.18 18.11C18.74 18.11 20 16.85 20 15.31L20 11.2C20 9.8 18.97 8.64 17.63 8.42ZM10 1.5C10.43 1.5 10.78 1.85 10.78 2.29C10.78 2.72 10.43 3.08 10 3.08C9.56 3.08 9.21 2.72 9.21 2.29C9.21 1.85 9.56 1.5 10 1.5ZM8.67 4.15C9.05 4.41 9.5 4.58 10 4.58C10.47 4.58 10.91 4.43 11.26 4.19L15.47 8.38L4.44 8.38L8.67 4.15Z" fill="#ACD41D" fill-opacity="1.000000" fill-rule="nonzero"/></svg>',
+				 //展商证件
+				cersSrc:'<svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path id="Vector" d="M10 0C4.49 0 0 4.48 0 10C0 15.51 4.49 20 10 20C15.5 20 20 15.51 20 10C20 4.48 15.5 0 10 0ZM9.8 4.77C11.58 4.77 13.01 6.2 13.01 7.98C13.01 9.76 11.58 11.21 9.8 11.21C8.02 11.21 6.58 9.76 6.58 7.98C6.58 6.2 8.02 4.77 9.8 4.77ZM15.92 16.08C15.48 16.53 14.97 16.91 14.42 17.25C13.14 18.04 11.61 18.5 10 18.5C8.38 18.5 6.85 18.04 5.57 17.25C5.02 16.91 4.51 16.53 4.07 16.08L4.07 15.88C4.07 13.84 5.74 12.16 7.77 12.16L12.22 12.16C14.25 12.16 15.92 13.84 15.92 15.88L15.92 16.08Z" fill="#ACD41D" fill-opacity="1.000000" fill-rule="nonzero"/></svg>',
 				//资质信息
 				cerSrc:'<svg width="20.000000" height="17.000000" viewBox="0 0 20 17" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path id="Vector" d="M15.27 2.43L14.88 2.43C14.55 0.52 12.99 -0.94 11.12 -0.94L1.29 -0.94C0.03 -0.94 -1 0.16 -1 1.5C-1 1.59 -0.98 1.67 -0.97 1.76C-0.98 1.8 -1 1.84 -1 1.89L-1 13.19C-1 15.25 0.68 16.93 2.73 16.93L15.27 16.93C17.32 16.93 19 15.25 19 13.19L19 6.16C19 4.1 17.32 2.43 15.27 2.43ZM14.71 10.94C14.02 10.94 13.45 10.38 13.45 9.68C13.45 8.98 14.02 8.41 14.71 8.41C15.41 8.41 15.98 8.98 15.98 9.68C15.98 10.38 15.41 10.94 14.71 10.94ZM1.29 0.56L11.12 0.56C12.17 0.56 13.05 1.35 13.34 2.43L1.29 2.43C0.85 2.43 0.5 2.01 0.5 1.5C0.5 0.98 0.85 0.56 1.29 0.56Z" fill="#ACD41D" fill-opacity="1.000000" fill-rule="nonzero"/></svg>',
 				//店铺信息
@@ -222,7 +245,9 @@
 				this.svgToUrl(this.storeSrc),
 				this.svgToUrl(this.exhSrc),
 				this.svgToUrl(this.relSrc),
-
+				this.svgToUrl(this.matSrc),
+				this.svgToUrl(this.mSrc),
+				this.svgToUrl(this.cersSrc)
 			];
 			//此处通过正则，修改svg图片颜色  这里是下方单元格
 			this.cupSrc = this.changeColor(arr[0],uni.getStorageSync('color'))
@@ -233,6 +258,9 @@
 			this.storeSrc=	this.changeColor(arr[5],uni.getStorageSync('color'))
 			this.exhSrc = this.changeColor(arr[6],uni.getStorageSync('color'))
 			this.relSrc = this.changeColor(arr[7],uni.getStorageSync('color'))
+			this.matSrc = this.changeColor(arr[8],uni.getStorageSync('color'))
+			this.mSrc = this.changeColor(arr[9],uni.getStorageSync('color'))
+			this.cersSrc = this.changeColor(arr[10],uni.getStorageSync('color'))
 			//金刚区
 			let jarr =[this.svgToUrl(this.jglist[0].src),this.svgToUrl(this.jglist[1].src),this.svgToUrl(this.jglist[2].src),this.svgToUrl(this.jglist[3].src)];
 			this.jglist[0].src =this.changeColor(jarr[0],uni.getStorageSync('color'))
@@ -376,7 +404,7 @@
 									return;
 								}
 								if (res.code == 1) {
-									uni.setStorageSync("tickerInfo", JSON.stringify(res.data));
+
 									this.lock = false;
 									uni.switchTab({
 										url: "/pages/center/index",

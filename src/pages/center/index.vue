@@ -8,7 +8,7 @@
 			</view>
 		</u-navbar>
 		<view>
-			<image class="headerImg" :src="info.exhibit_one.img" mode="aspectFill" />
+			<image class="headerImg" :src="info.exhibit_one.img" mode="scaleToFill" />
 		</view>
 		<view class="userInfo" :style="'color:'+ themeColors">
 			<view style="display: flex">
@@ -96,11 +96,7 @@
 			};
 		},
 		created() {
-			this.$refs.uqrcode.toTempFilePath({
-				success: (res) => {
-					console.log(res);
-				},
-			});
+			
 		},
 		//在mounted钩子函数中调用nowTimes函数、在beforeDestroy钩子函数中调用clear函数
 		mounted() {
@@ -110,9 +106,13 @@
 		beforeDestroy() {
 			this.clear();
 		},
-		onLoad(option) {
-			this.info = JSON.parse(uni.getStorageSync("tickerInfo"));
-			console.log(this.info);
+		 async onLoad(options) {
+			await getMyTicket({
+				exhibit_id: uni.getStorageSync("exhibit_id"),
+			}).then((res)=>{
+				this.info = res.data
+				console.log(this.info);
+			})
 			if (this.info.status == 0) {
 				this.qrColor = "#000";
 			} else if (this.info.status == 1) {
@@ -121,6 +121,11 @@
 			if (!this.info.team) {
 				this.text = "立即成团";
 			}
+			await this.$refs.uqrcode.toTempFilePath({
+				success: (res) => {
+					console.log(res);
+				},
+			});
 		},
 		methods: {
 			//获取当前时间

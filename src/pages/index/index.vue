@@ -220,37 +220,6 @@
 			});
 		},
 		onLoad(options) {
-			let time  = Date.now()
-			uni.request({
-					url:"http://tracking.e.qq.com/conv",
-					method:'POST',
-					data:{
-						"actions":[{
-        							"outer_action_id":"outer_action_identity",// 选填，若上报可能有重复请填写该id，系统会根据该ID进行去重，详见FAQ
-       								"action_time":time.toString(),
-        							"user_id":{//user_id，可采集到的设备标示
-        								"wechat_unionid":uni.getStorageSync("uniond"),//当为小程序类、公众号和企业微信转化时，此字段与wechat_openid必传其一
-        								"wechat_app_id":"wx8582966c73ac7e3b",//用户发生该行为对应的小程序appid，该字段必填，并确保该appid已对该账户进行了授权（请参考帮助中心-转化归因使用指南-微信小程序转化归因操作手册中的appid授权部分）
-        							},
-       								"action_type":"RESERVATION", // 必填 行为类型
-        							"trace": {
-        								"click_id":'wx0isj5fonx6cgok' // 必填 click_id
-        							},
-
-								}]
-						},
-                        
-                    success:(res)=>{
-                        log.info('res=>',res)
-                    },
-                    fail:(err)=>{
-                        log.info('err=>',err)
-                    }
-				})
-			console.log(options)
-			if(options.gdt_vid){
-				uni.setStorageSync("gdt_vid", options.gdt_vid)
-			}
 			this.getExhibitorList()
 			newsGetCate({
 					obj_id: config.obj_id,
@@ -361,7 +330,7 @@
 			toExhibitor() {
 				uni.switchTab({
 					url: '/pages/exhibitor/index'
-				})
+				})	
 			},
 			toWeb(url) {
 				if (url) {
@@ -401,7 +370,7 @@
 									return;
 								}
 								if (res.code == 1) {
-									uni.setStorageSync("tickerInfo", JSON.stringify(res.data));
+									
 									this.lock = false;
 									uni.switchTab({
 										url: "/pages/center/index",

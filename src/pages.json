@@ -211,6 +211,13 @@
 						"navigationStyle": "custom",
 						"navigationBarTitleText": "海名宠物展"
 					}
+				},
+				{
+					"path": "register/audit",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "海名宠物展"
+					}
 				}
 			]
 		},
@@ -282,6 +289,61 @@
 				},
 				{
 					"path": "store/info",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "海名宠物展"
+					}
+				},
+				{
+					"path": "match/index",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "海名宠物展"
+					}
+				},
+				{
+					"path": "match/list",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "海名宠物展"
+					}
+				},
+				{
+					"path": "match/rank",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "海名宠物展"
+					}
+				},{
+					"path": "certificate/index",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "海名宠物展"
+					}
+				},
+				{
+					"path": "certificate/list",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "海名宠物展"
+					}
+				},
+				{
+					"path": "meiban/index",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "海名宠物展"
+					}
+				},
+				{
+					"path": "integral/index",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "海名宠物展"
+					}
+				},
+				{
+					"path": "integral/qrInfo",
 					"style": {
 						"navigationStyle": "custom",
 						"navigationBarTitleText": "海名宠物展"

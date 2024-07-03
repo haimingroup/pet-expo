@@ -222,3 +222,88 @@ export function getStoreTags(data) {
 		data: data
 	})
 }
+ /*--------展商服务--------*/
+ // 获取店铺楣版
+export function getLintel(data) {
+	return apiPost({
+		url: '/v2/serve/getLintel',
+		data: data
+	})
+}
+ // 保存楣版信息
+ export function saveLintel(data) {
+	return apiPost({
+		url: '/v2/serve/saveLintel',
+		data: data
+	})
+}
+
+ // 获取本届展商证件列表
+ export function getStoreExhibitCards(data) {
+	return apiPost({
+		url: '/v2/serve/getStoreExhibitCards',
+		data: data
+	})
+}
+
+ // 获取可选店铺联系人列表
+ export function getStoreUserList(data) {
+	return apiPost({
+		url: '/v2/serve/getStoreUserList',
+		data: data
+	})
+}
+
+ // 添加本届展商证
+ export function addStoreExhibitCards(data) {
+	return apiPost({
+		url: '/v2/serve/addStoreExhibitCards',
+		data: data
+	})
+}
+
+ // 取消展商证
+ export function delStoreExhibitCards(data) {
+	return apiPost({
+		url: '/v2/serve/delStoreExhibitCards',
+		data: data
+	})
+}
+/*--------- 积分---------*/
+ // 积分码详情
+ export function getScoreCodeDetail(data) {
+	return apiPost({
+		url: '/v2/score/getScoreCodeDetail',
+		data: data
+	})
+}
+ // 积分记录列表
+ export function getScoreLog(data) {
+	return apiPost({
+		url: '/v2/score/getScoreLog',
+		data: data
+	})
+}
+ // 用户积分余额
+ export function getBalance(data) {
+	return apiPost({
+		url: '/v2/score/getBalance',
+		data: data
+	})
+}
+ // 扫码-消费积分码
+ export function consumptionScoreCode(data) {
+	return apiPost({
+		url: '/v2/score/consumptionScoreCode',
+		data: data
+	})
+}
+
+ // 展商证
+ export function getExTicket(data) {
+	return apiPost({
+		url: '/v2/user/getMyTicket',
+		data: data
+	})
+}
+

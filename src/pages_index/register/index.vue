@@ -1,7 +1,7 @@
 <template>
   <view class="page">
     <!-- 顶部标题栏 -->
-    <u-navbar :fixed="true"  :bgColor="bgColor" @leftClick="back">
+    <u-navbar :fixed="true" :bgColor="bgColor" @leftClick="back">
       <view class="navTitle" slot="left">
         <u-icon name="arrow-left" color="#FFF"></u-icon>
         <text style="margin-left: 10rpx">观众预登记</text>
@@ -41,7 +41,7 @@
               v-if="item.exhibit_field_one.type == 2"
               v-model="from[item.exhibit_field_one.field_name]"
               placement="row"
-              iconSize="24"
+              iconSize="32"
               labelSize="32"
             >
               <u-radio
@@ -50,7 +50,8 @@
                 )"
                 :key="rindex"
                 :customStyle="{ marginRight: '8px', fontSize: '32rpx' }"
-                iconSize="24"
+                size="32"
+                iconSize="32"
                 labelSize="32"
                 :name="rindex"
                 :label="lable"
@@ -112,6 +113,61 @@
               @confirm="confirmCoun"
             ></u-picker>
           </u-form-item>
+            <!-- 单选 -->
+            <u-form-item label="观众身份" prop="phone" required>
+              <u-radio-group
+                v-model="from.type"
+                placement="row"
+                size="32"
+                iconSize="32"
+                labelSize="32"
+                @change="radChange"
+              >
+                <u-radio
+                  :customStyle="{ marginRight: '8px', fontSize: '32rpx' }"
+                  iconSize="32"
+                  labelSize="32"
+                  :name="0"
+                  label="普通观众"
+                  value="0"
+                />
+                <u-radio
+                  :customStyle="{ marginRight: '8px', fontSize: '32rpx' }"
+                  iconSize="32"
+                  labelSize="32"
+                  :name="1"
+                  label="专业观众"
+                  value="1"
+                />
+              </u-radio-group>
+            </u-form-item>
+            <u-form-item v-if="showUPload" label="营业执照" prop="phone" required>
+              <u-upload
+                  :fileList="fileList1"                          
+                  @afterRead="afterRead1"
+                  @delete="deletePic"
+                  name="1"
+                  width="144"
+                  height="144"
+                  :maxCount="1"
+                  :previewFullImage="true"
+              ></u-upload>
+              <view style="font-size:24rpx;color:#CCC;">营业执照与名片二选一即可</view>
+            </u-form-item>
+              <u-form-item  v-if="showUPload" label="名片图片" prop="phone" required>
+                <u-upload
+                    :fileList="fileList2"                          
+                    @afterRead="afterRead2"
+                    @delete="deletePic"
+                    name="2"
+                    width="144"
+                    height="144"
+                    :maxCount="1"
+                    :previewFullImage="true"
+                ></u-upload>
+                <view style="font-size:24rpx;color:#CCC;">营业执照与名片二选一即可</view>
+              </u-form-item>
+
         </u--form>
       </view>
       <view class="subBtn" :style="'background:'+ themeColors" @tap="submit"> 提交 </view>
@@ -119,7 +175,7 @@
   </view>
 </template>
    <script>
-import { getFields, addTicket, getAreaJson, getCountry } from "@/api/register";
+import { getFields, addTicket, getAreaJson, getCountry,proUserUp } from "@/api/register";
 export default {
   data() {
     return {
@@ -141,9 +197,13 @@ export default {
       locationText: "请选择",
       countryText: "请选择",
       areaList: [],
+      fileList1: [],
+      fileList2: [],
+      showUPload: false,
     };
   },
   async onLoad(options) {
+
     uni.showLoading({
       title: "加载中",
     });
@@ -154,7 +214,7 @@ export default {
         title: "请登记后查看",
         icon: "none",
       });
-      this.showList = res.data;
+      this.showList = res.data
       this.showList.map((item, index) => {
         this.from[item.exhibit_field_one.field_name] = "";
         if (item.exhibit_field_one.field_name == "area_code") {
@@ -169,6 +229,7 @@ export default {
           this.from["phone"] = uni.getStorageSync("phone");
         }
       });
+      this.from['type'] = 0
       uni.hideLoading();
     });
     await getCountry().then((res) => {
@@ -192,6 +253,99 @@ export default {
     }
   },
   methods: {
+    radChange(n){
+        if(n ==1){
+          this.showUPload =true
+        }else{
+          this.showUPload =false
+        }
+    },
+    recursionCompressWechat(url, count, isReturnBase64, callback) {
+        // 在递归五次后结束递归
+        if (count > 5) {
+          if (isReturnBase64) {
+            WechatTobase4(url)
+          } else {
+            callback && callback(url);
+          }
+          return;
+        }
+        // 将图片进行压缩
+        uni.compressImage({
+          src: url, // 图片路径
+          quality: 40, // 压缩质量
+          success: (resCompress) => {
+            console.log(resCompress, "压缩后");
+            // 先获取压缩后的体积，大于1M就继续压缩
+            uni.getFileInfo({
+              filePath: resCompress.tempFilePath,
+              success: (resFileInfo) => {
+                if (resFileInfo.size > 1024 * 1024) {
+                  //压缩后大于1M就继续压缩
+                  count++;
+                  recursionCompressWechat(resCompress.tempFilePath, count, isReturnBase64, callback);
+                  return;
+                } else {
+                  if (isReturnBase64) {
+                    WechatTobase4(resCompress.tempFilePath)
+                  } else {
+                    callback && callback(resCompress.tempFilePath)
+                  }
+                }
+              },
+            });
+          },
+          fail: (resCompress) => {
+            callback(url);
+          },
+        })
+    },
+    afterRead1(event){
+            console.log(event)
+            if(event.file.size > 1024 * 1024) {
+              recursionCompressWechat()
+            }
+            // 当设置 multiple 为 true 时, file 为数组格式，否则为对象格式
+            let fileListLen = this[`fileList${event.name}`].length
+            this[`fileList${event.name}`].push({
+              file:event.file,
+              status: 'uploading',
+              message: '上传中'
+            })
+          let url = "data:image/jpeg;base64," + uni.getFileSystemManager().readFileSync(event.file.url, "base64");
+          proUserUp({type:0,img:url}).then(res=>{
+            this.from.company_lintel = res.data.url
+            this[`fileList${event.name}`].splice(fileListLen, 1)
+            this[`fileList${event.name}`].push({
+                status: 'success',
+                message: '',
+                url: res.data.url
+            })
+          })
+          
+        },
+    afterRead2(event){
+       // 当设置 multiple 为 true 时, file 为数组格式，否则为对象格式
+       let fileListLen = this[`fileList${event.name}`].length
+       this[`fileList${event.name}`].push({
+              file:event.file,
+              status: 'uploading',
+              message: '上传中'
+            })
+          let url = "data:image/jpeg;base64," + uni.getFileSystemManager().readFileSync(event.file.url, "base64");
+          proUserUp({type:0,img:url}).then(res=>{
+            this.from.business_card = res.data.url
+            this[`fileList${event.name}`].splice(fileListLen, 1)
+            this[`fileList${event.name}`].push({
+                status: 'success',
+                message: '',
+                url: res.data.url
+            })
+          })
+          },
+    deletePic(event) {
+        this[`fileList${event.name}`].splice(event.index, 1)
+		},
     //省市区多列选择器
     changeHandler(e) {
       const {
@@ -259,16 +413,17 @@ export default {
             icon:'none',
           })
           return;
-        } else {
+        }else{
+          uni.showToast({
+            title:res.msg,
+            icon:'none',
+          })
           if(res.data.url){
             uni.setStorageSync('webviewUrl', res.data.url)
 								uni.navigateTo({
 									url: "/pages_index/webview/index"
 							})
-          }else if(res.data.pay==1){
-            uni.navigateTo({url: "/pages_index/pay/index" });
-          }
-          else{
+          }else if(uni.getStorageSync("team_id")){
             uni.removeStorageSync("team_id");
             uni.removeStorageSync('toexinfo')
             uni.hideLoading();
@@ -276,7 +431,6 @@ export default {
               uni.navigateBack();
             }, 1000);
           }
-         
         }
       }).catch();
     },
@@ -328,13 +482,7 @@ export default {
     font-size: 20rpx;
   }
 }
-::v-deep .u-radio-group--row{
-  flex-wrap: wrap;
-}
-::v-deep .u-radio__icon-wrap{
-  width: 24rpx!important;
-  height: 24rpx!important;
-}
+
 .subBtn {
   width: 360rpx;
   text-align: center;
@@ -344,4 +492,20 @@ export default {
   font-size: 36rpx;
   border-radius: 50px;
 }
+::v-deep .u-upload__button{
+        .u-icon{
+            text{
+                font-size: 40rpx !important;
+            }
+        }
+    }
+    ::v-deep .u-upload__deletable__icon{
+        .u-icon{
+            text{
+                font-size: 24rpx !important;
+                top: 3rpx !important;
+                right: 3rpx !important;
+            }
+        }
+    }
 </style>

@@ -63,6 +63,20 @@ export function apiPost(params) {
 					uni.navigateTo({
 						url: '/pages_index/register/index'
 					})
+				}else if(res.data.code == 23){
+					uni.setStorageSync('webviewUrl', res.data.data.url)
+					uni.navigateTo({
+						url: "/pages_index/webview/index"
+					})
+				}else if(res.data.code == 24){
+					uni.navigateTo({
+						url: "/pages_index/pay/index"
+					})
+				}
+				if(res.data.code == 26){
+					uni.navigateTo({
+						url: "/pages_index/register/audit"
+					})
 				}
 				relove(res.data)
 			},

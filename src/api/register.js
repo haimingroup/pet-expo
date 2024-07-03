@@ -28,7 +28,7 @@ export function getFields(data) {
 // 观众登记 
 export function addTicket(data) {
     return apiPost({
-        url: '/v1/user/addTicket',
+        url: '/v2/user/addTicket',
         data: data
     })
 }
@@ -36,7 +36,7 @@ export function addTicket(data) {
 // 门票详情 
 export function getMyTicket(data) {
     return apiPost({
-        url: '/v1/user/getMyTicket',
+        url: '/v2/user/getMyTicket',
         data: data
     })
 }
@@ -72,6 +72,13 @@ export function getCountry(data) {
 export function getAreaJson(data) {
     return apiPost({
         url: '/v1/system/getAreaJson',
+        data: data
+    })
+}
+// 专业观众-上传图片（base64）
+export function proUserUp(data) {
+    return apiPost({
+        url: '/v2/system/proUserUp',
         data: data
     })
 }

@@ -34,6 +34,23 @@ import log from '@/log.js';
 					uni.setStorageSync('store_id',arr[2])
 					uni.setStorageSync('team_id',arr[3])
 					uni.setStorageSync('toexinfo',1)
+				}else if(arr[0] == 'g'){
+					uni.setStorageSync('exhibit_id',arr[1])
+					getInfo({exhibit_id:arr[1]}).then((res)=>{
+						uni.setStorageSync("ceilingImg", res.data.img);
+						uni.setStorageSync('color', res.data.color_main);
+						uni.setStorageSync('color_d', res.data.color_deputy);
+					})
+					uni.setStorageSync('store_id',arr[2])
+					uni.setStorageSync('goods_id',arr[3])
+				}else if(arr[0] == 'f'){
+					uni.setStorageSync('exhibit_id',arr[1])
+					getInfo({exhibit_id:arr[1]}).then((res)=>{
+						uni.setStorageSync("ceilingImg", res.data.img);
+						uni.setStorageSync('color', res.data.color_main);
+						uni.setStorageSync('color_d', res.data.color_deputy);
+					})
+					uni.setStorageSync('score_id',arr[2])
 				}else{
 					uni.setStorageSync('scene', scene)
 				}

@@ -259,14 +259,9 @@ export default {
              
              },
              toCenter(){
-                getMyTicket({
-							exhibit_id: uni.getStorageSync("exhibit_id"),
-						}).then((res) => {
-                            uni.setStorageSync("tickerInfo", JSON.stringify(res.data));
-                            uni.switchTab({
-                                url: "/pages/center/index",
-                            });
-						})
+                uni.switchTab({
+                    url: "/pages/center/index",
+                });
              },
              //腾讯广告
 			tencent(){

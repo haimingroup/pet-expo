@@ -40,7 +40,6 @@ export function getAgreement(data) {
 }
 
 // 展之siteToken
- 
 export function getZZToken(data) {
 	return apiPost({
 		url: '/v1/exhibit/getZZToken',
