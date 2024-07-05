@@ -114,7 +114,7 @@
             ></u-picker>
           </u-form-item>
             <!-- 单选 -->
-            <u-form-item label="观众身份" prop="phone" required>
+            <u-form-item v-if="showAud" label="观众身份" prop="phone" required>
               <u-radio-group
                 v-model="from.type"
                 placement="row"
@@ -175,7 +175,7 @@
   </view>
 </template>
    <script>
-import { getFields, addTicket, getAreaJson, getCountry,proUserUp } from "@/api/register";
+import { getFields, addTicket, getAreaJson, getCountry,proUserUp,getUserFieldInfo } from "@/api/register";
 export default {
   data() {
     return {
@@ -200,6 +200,7 @@ export default {
       fileList1: [],
       fileList2: [],
       showUPload: false,
+      showAud:false,
     };
   },
   async onLoad(options) {
@@ -207,6 +208,7 @@ export default {
     uni.showLoading({
       title: "加载中",
     });
+
     await getFields({
       exhibit_id: uni.getStorageSync("exhibit_id"),
     }).then((res) => {
@@ -214,6 +216,9 @@ export default {
         title: "请登记后查看",
         icon: "none",
       });
+      if(res.code ==27){
+        this.showAud = true
+      }
       this.showList = res.data
       this.showList.map((item, index) => {
         this.from[item.exhibit_field_one.field_name] = "";
@@ -230,8 +235,17 @@ export default {
         }
       });
       this.from['type'] = 0
+      getUserFieldInfo().then((res)=>{
+        console.log('123')
+      if(res.code !==0){
+        res.data.map((item, index) => {
+          this.from[item.field_name] = item.value
+        })
+      }
+    })
       uni.hideLoading();
     });
+  
     await getCountry().then((res) => {
       this.country = [res.data];
     });
@@ -413,11 +427,14 @@ export default {
             icon:'none',
           })
           return;
+        }else if(res.code == 1){
+            uni.switchTab({ url: '/pages/center/index' })
         }else{
           uni.showToast({
             title:res.msg,
             icon:'none',
           })
+         
           if(res.data.url){
             uni.setStorageSync('webviewUrl', res.data.url)
 								uni.navigateTo({

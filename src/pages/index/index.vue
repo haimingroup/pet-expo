@@ -331,6 +331,9 @@
 				uni.switchTab({
 					url: '/pages/exhibitor/index'
 				})	
+				// uni.navigateTo({
+				// 		url: "/pages_index/register/index"
+				// 	})
 			},
 			toWeb(url) {
 				if (url) {
