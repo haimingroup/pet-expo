@@ -90,11 +90,11 @@
 							</view>
 						</view>
 					</u-cell>
-					<!-- <u-cell title="会员等级" :isLink="true">
+					<u-cell title="我的积分"  @tap="navigator('/pages_platform/integral/index')" :isLink="true">
 						<view slot="icon">
 							<view :style="'background-image:url('+levelSrc+');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-repeat:no-repeat'" ></view>
 						</view>
-					</u-cell> -->
+					</u-cell>
 					<u-cell  @tap="navigator('/pages_index/mine/contact/index')" title="联系我们" :isLink="true">
 						<view slot="icon">
 							<view :style="'background-image:url('+callSrc+');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-repeat:no-repeat'" ></view>
