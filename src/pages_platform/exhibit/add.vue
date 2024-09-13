@@ -58,14 +58,19 @@
                         @close="close"
                          @open="open">
                         <view class="popBox" > 
-                            <view 
-                                v-for="item,index in tagList" :key="index"
-                                class="tagBox" 
-                                @tap="checkTag(item.tag_name)" 
-                                :style="current == item.tag_name?'padding:22rpx 40rpx;border: none;color:#FFF;background:'+themeColors : ''"
+                            <u-grid
+                                    :border="false"
+                            >
+                                <u-grid-item
+                                    v-for="item,index in tagList" :key="index"
+                                    @tap="checkTag(item.tag_name)" 
                                 >
-                                {{ item.tag_name }}
-                            </view>
+                                <view class="tagBox" :style="current == item.tag_name?'padding:22rpx 40rpx;border: none;color:#FFF;background:'+themeColors : ''">
+                                    {{ item.tag_name }}
+
+                                </view>
+                                </u-grid-item>
+                            </u-grid>
                         </view>
                     </u-popup>
                 </view>
@@ -299,27 +304,24 @@ export default {
             font-size: 28rpx;
         }
     }
-    .popBox{
-        display: flex;
-        height: 48vh;
-        width: 686rpx;
-        overflow: auto;
-        flex-wrap: wrap;
-        padding: 32rpx;
-        justify-content: flex-start;
-        .tagBox{
-            width: 150rpx;
+    .tagBox{
+            width: 130rpx;
             height: 54rpx;
             line-height: 54rpx;
             text-align: center;
-            padding: 20rpx 40rpx;
+            padding: 20rpx 30rpx;
             border: 2rpx solid #ccc;
             border-radius: 20rpx;
             margin-bottom: 20rpx;
-        }
-        .tagBox:nth-child(-3n+8){
-            margin: 0rpx 32rpx 20rpx 32rpx;
-        }
+            overflow: hidden; /* 当内容超出容器时进行隐藏 */
+            white-space: nowrap; /* 不换行 */
+            text-overflow: ellipsis; /* 使用省略号表示被隐藏的部分 */
+    }
+    .popBox{
+        height: 48vh;
+        width: 686rpx;
+        overflow: auto;
+        padding: 32rpx; 
     }
     ::v-deep .u-form-item__body{
         padding: 0 !important;

@@ -1,9 +1,8 @@
 <script>
 import {getInfo} from "@/api/list.js";
-import log from '@/log.js';
 	export default {
 		onLaunch: function(options) {
-			log.info(options.query)
+
 			if(uni.getStorageSync('token')){
 				if(uni.getStorageSync('defaultTim '!==false)){
 					
@@ -22,9 +21,10 @@ import log from '@/log.js';
 			
 			if(options.query.scene){
 				const scene = decodeURIComponent(options.query.scene)
+				console.log(scene)
 				let arr = scene.split(',')
 				if(arr[0] == 's'){
-					console.log(arr)
+					//展商海报
 					uni.setStorageSync('exhibit_id',arr[1])
 					getInfo({exhibit_id:arr[1]}).then((res)=>{
 						uni.setStorageSync("ceilingImg", res.data.img);
@@ -35,6 +35,7 @@ import log from '@/log.js';
 					uni.setStorageSync('team_id',arr[3])
 					uni.setStorageSync('toexinfo',1)
 				}else if(arr[0] == 'g'){
+					//产品海报
 					uni.setStorageSync('exhibit_id',arr[1])
 					getInfo({exhibit_id:arr[1]}).then((res)=>{
 						uni.setStorageSync("ceilingImg", res.data.img);
@@ -44,6 +45,7 @@ import log from '@/log.js';
 					uni.setStorageSync('store_id',arr[2])
 					uni.setStorageSync('goods_id',arr[3])
 				}else if(arr[0] == 'f'){
+					//积分扫码
 					uni.setStorageSync('exhibit_id',arr[1])
 					getInfo({exhibit_id:arr[1]}).then((res)=>{
 						uni.setStorageSync("ceilingImg", res.data.img);
@@ -51,7 +53,8 @@ import log from '@/log.js';
 						uni.setStorageSync('color_d', res.data.color_deputy);
 					})
 					uni.setStorageSync('score_id',arr[2])
-				}else{
+				}
+				else{
 					uni.setStorageSync('scene', scene)
 				}
 			}
@@ -102,8 +105,8 @@ import log from '@/log.js';
 	@font-face {
 		font-family: "阿里妈妈数黑体 Bold";
 		font-weight: 700;
-		src: url("//at.alicdn.com/wf/webfont/SCxp2dD2ulj6/6GPSUjZeBDAe.woff2") format("woff2"),
-			url("//at.alicdn.com/wf/webfont/SCxp2dD2ulj6/MShs9h5QakXU.woff") format("woff");
-		font-display: swap;
+		src: url("@/static/font/xTCVc9ituNuo.woff2") format("woff2"),
+ 		url("@/static/font/xTCVc9ituNuo.woff") format("woff");
+  		font-display: swap;
 	}
 </style>

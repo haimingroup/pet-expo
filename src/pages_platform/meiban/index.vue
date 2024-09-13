@@ -21,7 +21,7 @@
                     </view>
                 </view>
                 <view style="margin: 16rpx 0 0 24rpx;font-size: 24rpx;color: #7f7f7f;">
-                    <text>您可于{{form.end_time}}前修改已提交的楣板信息，过时如需修改，请联系您的销售人员</text>
+                    <text>您可于开展前10天修改已提交的楣板信息，过时如需修改，请联系您的销售人员</text>
                 </view>
             </view>
             <u--form

@@ -3,7 +3,7 @@
 	<view class="pages">
 		<u-popup :show="showLocation" :closeOnClickOverlay="false" round="10" mode="center" @close="close" @open="open">
 			<view class="popBox">
-				<u-avatar size="220" :src="require('@/static/logo.png')"></u-avatar>
+				<u-avatar size="220" :src="require('@/static/tarBar/center.png')"></u-avatar>
 				<text class="popText1">当前选择的展会</text>
 				<view class="local">
 					<text>{{ nowExhibits.name }}</text>
@@ -76,7 +76,7 @@
 					<view class="leftTitle">
 						<view class="colorBox" :style="'background:'+ themeColors" />
 						<text>展商推荐</text>
-					</view> 
+					</view>
 					<view class="rightTitle" :style="'color:'+ themeColors" @tap="toExhibitor">
 						更多 >>>
 					</view>
@@ -105,7 +105,7 @@
 			<template v-slot:tabbar_index_2>
 				<view class="custom_style">
 					<image class="btnImg" src="../../static/tarBar/center.png" mode=""></image>
-					<view>{{ cneterTitle }}</view>
+					<text>{{ cneterTitle }}</text>
 				</view>
 			</template>                                                                                                                                                             
 		</m-tabbar>
@@ -126,10 +126,6 @@
 		getInfo,
 		getDefault
 	} from "@/api/list.js";
-	import {
-		queryProjectDetail,
-		selectRecommendExhibitor
-	} from '@/api/zzapi.js'
 	export default {
 		components: {
 			newsBox,
@@ -294,6 +290,10 @@
 						uni.setStorageSync('current', 1)
 						this.toExhibitor()
 						break;
+					case 5:
+						uni.setStorageSync('get_contest', 1)
+						this.navigator('/pages_platform/match/rank')
+						break;
 				}
 
 			},
@@ -315,7 +315,6 @@
 					}
 				})
 			},
-			
 			//跳转事件
 			navigator(url) {
 				uni.navigateTo({
@@ -328,12 +327,12 @@
 				});
 			},
 			toExhibitor() {
-				uni.switchTab({
-					url: '/pages/exhibitor/index'
-				})	
-				// uni.navigateTo({
-				// 		url: "/pages_index/register/index"
-				// 	})
+				// uni.switchTab({
+				// 	url: '/pages/exhibitor/index'
+				// })
+				uni.navigateTo({
+					url:'/pages_index/register/index'
+				})
 			},
 			toWeb(url) {
 				if (url) {
@@ -373,21 +372,15 @@
 									return;
 								}
 								if (res.code == 1) {
-									
+									uni.setStorageSync("tickerInfo", JSON.stringify(res.data));
 									this.lock = false;
 									uni.switchTab({
 										url: "/pages/center/index",
 									});
 								}
-								if(res.code == 23){
-									uni.setStorageSync('webviewUrl', res.data.url)
+								if (res.code == 25){
 									uni.navigateTo({
-										url: "/pages_index/webview/index"
-									})
-								}
-								if(res.code == 24){
-									uni.navigateTo({
-										url: "/pages_index/pay/index"
+										url: "/pages_index/exhibitorTicket/index"
 									})
 								}
 								this.lock = false;
@@ -407,6 +400,22 @@
 					uni.setStorageSync("ceilingImg", res.data.img);
 					uni.setStorageSync('color', res.data.color_main);
 					uni.setStorageSync('color_d', res.data.color_deputy);
+					newsGetCate({
+						obj_id: config.obj_id,
+					}).then((res) => {
+						this.list = res.data;
+						this.list.unshift({
+							news_cate_id: 0,
+							cate_name: "本展资讯",
+							exhibit_id: uni.getStorageSync("exhibit_id"),
+						}) 
+						getExhibitNews({
+							exhibit_id:uni.getStorageSync("exhibit_id"),
+							page: this.newsPage,
+						}).then((res)=>{
+							this.newsList = res.data.data;
+						})
+					});
 				});
 			},
 			//点击门票
@@ -437,21 +446,14 @@
 									return;
 								}
 								if (res.code == 1) {
-									uni.setStorageSync("tickerInfo", JSON.stringify(res.data));
 									this.lock = false;
 									uni.switchTab({
 										url: "/pages/center/index",
 									});
 								}
-								if(res.code == 23){
-									uni.setStorageSync('webviewUrl', res.data.url)
+								if (res.code == 25){
 									uni.navigateTo({
-										url: "/pages_index/webview/index"
-									})
-								}
-								if(res.code == 24){
-									uni.navigateTo({
-										url: "/pages_index/pay/index"
+										url: "/pages_index/exhibitorTicket/index"
 									})
 								}
 								this.lock = false;
@@ -494,29 +496,7 @@
 					if(!uni.getStorageSync("exhibit_id")){
 						uni.setStorageSync("exhibit_id", this.nowExhibits.exhibit_id);	
 					}
-					//获取新闻列表 当前新闻列表统一不区分项目，故转放在onload周期内
 					//如果后期转换成跟随项目变化在此处增加接口
-						
-					// //获取展之siteToken
-					// getZZToken({
-					// 	exhibit_id: uni.getStorageSync("exhibit_id"),
-					// }).then((res) => {
-					// 	uni.setStorageSync("pid", res.data.pid)
-					// 	uni.setStorageSync('siteToken',res.data.siteToken)
-					// 	queryProjectDetail({
-					// 		projectId: res.data.pid
-					// 	}).then((res) => {
-					// 		uni.setStorageSync("exhibitCode", res.data.data.exhibitCode)
-					// 		selectRecommendExhibitor({
-					// 			pid: uni.getStorageSync("pid"),
-					// 			page: 1,
-					// 			rows: 9
-					// 		}).then((res) => {
-					// 			this.recList = res.data.result
-					// 		})
-					// 	})
-
-					// })
 					//获取主页数据
 					homeData({
 						exhibit_id: uni.getStorageSync("exhibit_id"),
@@ -775,7 +755,6 @@
 			border-radius: 50%;
 			width: 112rpx;
 			height: 112rpx;
-			border-collapse:collapse;
 		}
 	}
 
@@ -793,7 +772,9 @@
 	::v-deep .u-search__content__icon {
 		display: none !important;
 	}
-
+	::v-deep .u-grid-item{
+		margin-bottom: 16rpx;
+	}
 	.listContent {
 		background: #fff;
 	}

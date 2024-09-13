@@ -218,6 +218,13 @@
 						"navigationStyle": "custom",
 						"navigationBarTitleText": "海名宠物展"
 					}
+				},
+				{
+					"path": "exhibitorTicket/index",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "海名宠物展"
+					}
 				}
 			]
 		},
@@ -344,6 +351,13 @@
 				},
 				{
 					"path": "integral/qrInfo",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "海名宠物展"
+					}
+				},
+				{
+					"path": "test/index",
 					"style": {
 						"navigationStyle": "custom",
 						"navigationBarTitleText": "海名宠物展"

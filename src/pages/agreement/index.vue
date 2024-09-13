@@ -75,6 +75,9 @@
 			this.getSence()
 		},
 		methods: {
+			close(){
+				this.showModal = false
+			},
 			getSence(){
 				if(uni.getStorageSync('src')){
 					this.src =uni.getStorageSync('src')

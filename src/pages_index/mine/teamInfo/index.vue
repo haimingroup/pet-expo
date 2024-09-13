@@ -70,14 +70,6 @@
                 {{ item.user_one.nickname || "" }}
               </view>
               <view class="time"> {{ item.created_at || "" }} </view>
-              <view class="state" v-if="item.status == 0"> 未核销 </view>
-              <view
-                class="state"
-                style="color: #07c160"
-                v-if="item.status == 1"
-              >
-                已到场
-              </view>
             </view>
           </view>
           <u-loadmore marginTop="30" :status="status" fontSize="32" />

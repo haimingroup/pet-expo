@@ -62,7 +62,7 @@
               <view class="acTitle"> 活动介绍 </view>
             </view>
             <view class="down">
-              <rich-text :nodes="info.content"></rich-text>
+              <rich-text :nodes="info.content"  @tap="handleRich"></rich-text>
             </view>
           </view>
         </view>
@@ -169,6 +169,13 @@ export default {
     };
   },
   methods: {
+    handleRich(){
+      let regex = /<img.*?src="(.*?)"/g;
+      let match = regex.exec(this.info.content)
+      uni.previewImage({
+        urls:[match[1]]
+      })
+    },
     apply() {
       if (this.showapply) {
         return;
@@ -289,7 +296,7 @@ export default {
         }
       }
       .down {
-        margin: 20rpx 0 20rpx 30rpx;
+        margin: 20rpx 0;
         color: rgb(153, 153, 153);
         font-size: 28rpx;
         font-weight: 400;
@@ -317,15 +324,18 @@ export default {
     font-weight: 600;
     border-radius: 100px;
     width: 300rpx;
-    height: 70rpx;
+    height: 78rpx;
     display: flex;
     align-items: center;
     justify-content: center;
     background: #fff;
+    margin: 0;
     border: 4rpx solid $theme-color;
   }
   .shareBtn::after{
     border: none;
   }
 }
+
+
 </style>
