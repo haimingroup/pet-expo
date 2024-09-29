@@ -41,7 +41,7 @@
               v-if="item.exhibit_field_one.type == 2"
               v-model="from[item.exhibit_field_one.field_name]"
               placement="row"
-              iconSize="32"
+              iconSize="24"
               labelSize="32"
             >
               <u-radio
@@ -50,8 +50,7 @@
                 )"
                 :key="rindex"
                 :customStyle="{ marginRight: '8px', fontSize: '32rpx' }"
-                size="32"
-                iconSize="32"
+                iconSize="24"
                 labelSize="32"
                 :name="rindex"
                 :label="lable"
@@ -114,18 +113,17 @@
             ></u-picker>
           </u-form-item>
             <!-- 单选 -->
-            <u-form-item v-if="showAud" label="观众身份" prop="phone" required>
+            <u-form-item label="观众身份" prop="phone" required>
               <u-radio-group
                 v-model="from.type"
                 placement="row"
-                size="32"
-                iconSize="32"
+                iconSize="24"
                 labelSize="32"
                 @change="radChange"
               >
                 <u-radio
                   :customStyle="{ marginRight: '8px', fontSize: '32rpx' }"
-                  iconSize="32"
+                  iconSize="24"
                   labelSize="32"
                   :name="0"
                   label="普通观众"
@@ -133,14 +131,16 @@
                 />
                 <u-radio
                   :customStyle="{ marginRight: '8px', fontSize: '32rpx' }"
-                  iconSize="32"
+                  iconSize="24"
                   labelSize="32"
                   :name="1"
                   label="专业观众"
                   value="1"
                 />
               </u-radio-group>
+            
             </u-form-item>
+            <text v-if="showUPload" style="margin-left: 130rpx;color: #7d7d7d;font-size: 20rpx;">执照，名片二选一上传即可</text>
             <u-form-item v-if="showUPload" label="营业执照" prop="phone" required>
               <u-upload
                   :fileList="fileList1"                          
@@ -152,7 +152,6 @@
                   :maxCount="1"
                   :previewFullImage="true"
               ></u-upload>
-              <view style="font-size:24rpx;color:#CCC;">营业执照与名片二选一即可</view>
             </u-form-item>
               <u-form-item  v-if="showUPload" label="名片图片" prop="phone" required>
                 <u-upload
@@ -165,23 +164,28 @@
                     :maxCount="1"
                     :previewFullImage="true"
                 ></u-upload>
-                <view style="font-size:24rpx;color:#CCC;">营业执照与名片二选一即可</view>
               </u-form-item>
 
         </u--form>
       </view>
       <view class="subBtn" :style="'background:'+ themeColors" @tap="submit"> 提交 </view>
     </view>
+    <u-modal :show="showModal" buttonReverse showCancelButton confirmText="找回门票" :content='content' @confirm="modalConfirm" @cancel="showModal = false"></u-modal>
   </view>
 </template>
    <script>
-import { getFields, addTicket, getAreaJson, getCountry,proUserUp,getUserFieldInfo } from "@/api/register";
+import { getFields, addTicket, getAreaJson, getCountry,proUserUp } from "@/api/register";
+import {findTicket} from '@/api/v2'
+import {verifyTicketBySelf} from '@/api/v2'
+import config from '@/utils/config.js'
 export default {
   data() {
     return {
+      content:'如若您在其他渠道登记过信息,请选择找回门票,否则请点击取消继续登记。',
       themeColors: uni.getStorageSync('color'),
       imgSrc: uni.getStorageSync("ceilingImg"),
       show: false,
+      showModal:true,
       showC: false,
       showcountry: false,
       showArea: false,
@@ -200,7 +204,6 @@ export default {
       fileList1: [],
       fileList2: [],
       showUPload: false,
-      showAud:false,
     };
   },
   async onLoad(options) {
@@ -208,7 +211,6 @@ export default {
     uni.showLoading({
       title: "加载中",
     });
-
     await getFields({
       exhibit_id: uni.getStorageSync("exhibit_id"),
     }).then((res) => {
@@ -216,9 +218,6 @@ export default {
         title: "请登记后查看",
         icon: "none",
       });
-      if(res.code ==27){
-        this.showAud = true
-      }
       this.showList = res.data
       this.showList.map((item, index) => {
         this.from[item.exhibit_field_one.field_name] = "";
@@ -235,17 +234,8 @@ export default {
         }
       });
       this.from['type'] = 0
-      getUserFieldInfo().then((res)=>{
-        console.log('123')
-      if(res.code !==0){
-        res.data.map((item, index) => {
-          this.from[item.field_name] = item.value
-        })
-      }
-    })
       uni.hideLoading();
     });
-  
     await getCountry().then((res) => {
       this.country = [res.data];
     });
@@ -267,6 +257,19 @@ export default {
     }
   },
   methods: {
+    modalConfirm(){
+      findTicket({exhibit_id:uni.getStorageSync('exhibit_id'),obj_id:config.obj_id}).then((res)=>{
+        if(res.code == 0){
+          uni.showToast({
+              title: res.msg,
+              icon: "none",
+            });
+            this.showModal =false
+        }else{
+          uni.switchTab({ url: '/pages/center/index' })
+        } 
+      })
+    },
     radChange(n){
         if(n ==1){
           this.showUPload =true
@@ -316,9 +319,6 @@ export default {
     },
     afterRead1(event){
             console.log(event)
-            if(event.file.size > 1024 * 1024) {
-              recursionCompressWechat()
-            }
             // 当设置 multiple 为 true 时, file 为数组格式，否则为对象格式
             let fileListLen = this[`fileList${event.name}`].length
             this[`fileList${event.name}`].push({
@@ -419,6 +419,7 @@ export default {
         this.from["enroll_team_id"] = uni.getStorageSync("team_id");
       }
       this.from.exhibit_id = uni.getStorageSync("exhibit_id");
+      this.from.openid = uni.getStorageSync("openid");
       addTicket(this.from).then((res) => {
         if (res.code == 0) {
           uni.hideLoading();
@@ -428,27 +429,31 @@ export default {
           })
           return;
         }else if(res.code == 1){
-            uni.switchTab({ url: '/pages/center/index' })
-        }else{
-          uni.showToast({
-            title:res.msg,
-            icon:'none',
-          })
-         
+          if(uni.getStorageSync("team_id")){
+            uni.removeStorageSync("team_id");
+            uni.removeStorageSync('toexinfo')
+            uni.hideLoading();
+          }
           if(res.data.url){
             uni.setStorageSync('webviewUrl', res.data.url)
 								uni.navigateTo({
 									url: "/pages_index/webview/index"
 							})
-          }else if(uni.getStorageSync("team_id")){
-            uni.removeStorageSync("team_id");
-            uni.removeStorageSync('toexinfo')
-            uni.hideLoading();
-            setTimeout(() => {
-              uni.navigateBack();
-            }, 1000);
+          }else if(res.data.act == 1){
+            uni.navigateTo({
+              url:'/pages_index/pay/list'
+            })
+          }else if(res.data.pay == 1){
+            uni.navigateTo({
+              url:'/pages_index/pay/index'
+            })
+          }else if(uni.getStorageSync("self_write_off")){
+            verifyTicketBySelf({exhibit_id:uni.getStorageSync('exhibit_id')}).then(((res)=>{
+                uni.removeStorageSync('self_write_off')
+                uni.switchTab({ url: '/pages/center/index' })
+            }))
           }
-        }
+      }
       }).catch();
     },
   },
@@ -499,7 +504,13 @@ export default {
     font-size: 20rpx;
   }
 }
-
+::v-deep .u-radio-group--row{
+  flex-wrap: wrap;
+}
+::v-deep .u-radio__icon-wrap{
+  width: 24rpx!important;
+  height: 24rpx!important;
+}
 .subBtn {
   width: 360rpx;
   text-align: center;

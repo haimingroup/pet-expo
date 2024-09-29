@@ -7,19 +7,81 @@
         </view>
 	</u-navbar>
     <view class="content">
+        <!-- 展会信息 -->
+        <view class="title" >
+            <view class="colorBox" :style="`background:`+themeColors"></view>
+            <view class="titleStr">展会信息</view>
+        </view>
+        <view class="ticketInfo" style="margin-bottom:40rpx">
+            <p class="test">
+                {{info.name}}
+            </p>
+            <view class="time">
+                <u-icon :name="timeIcon" size="26"></u-icon>
+                <span>{{info.start_time}}-{{info.end_time}}</span>
+            </view>
+            <view class="time">
+                <u-icon name="map" size="26"></u-icon>
+                <span>{{info.lab_name}}</span>
+            </view>
+        </view>
         <!-- 票务信息 -->
-        <view class="title">
+        <view class="title" style="margin-bottom:40rpx"  v-if="!info.many_tickets">
             <view class="colorBox" :style="`background:`+themeColors"></view>
             <view class="titleStr">票务信息</view>
         </view>
-        <view class="ticketInfo">
+        <view class="title" style="margin:40rpx 0" v-if="info.many_tickets">
+                <view class="colorBox" :style="`background:`+themeColors"></view>
+                <view class="titleStr">多人票选择</view>
+        </view>
+        <view class="ticketInfo" v-if="!info.many_tickets ">
+            <view style="display: flex;justify-content: space-between;margin-bottom: 20rpx;" v-if="showPic">
+                <p class="test">
+                    {{ info.name}}门票  
+                </p>
+                <p class="money">
+                     ¥{{info.price}}
+                </p>
+            </view>
+           
+            <view  v-for="checkItem in checkList" :key="checkItem.activity_id" style="display: flex;justify-content: space-between;margin-bottom: 20rpx;">
             <p class="test">
-                {{ info.name}}门票  
+                {{ checkItem.title}} 
             </p>
             <p class="money">
-                ¥{{info.price}}
+                ¥{{checkItem.price||0}}
             </p>
-            <view class="discounts" v-if="showInfo">
+        </view>
+        </view>
+        <!-- 没想好怎么写，先简单显示，等后期简化代码再更改 -->
+        <view class="ticketInfo" v-if="info.many_tickets" :style="current == 1? 'border-color:'+ themeColors : ''" @tap="check(1,Number(info.price))">
+            <view style="display: flex;justify-content: space-between" >
+                <p class="test">
+                    单人门票  
+                </p>
+                <p class="money">
+                     ¥{{Number(info.price)}}
+                </p>
+            </view>
+        </view>
+        <view class="ticketInfo" 
+            v-for="ticket,indextic in info.many_tickets" 
+            :key="indextic"
+            :style="current == ticket.people_num? 'border-color:'+ themeColors : ''"
+            style="margin-top: 20rpx;" 
+            @tap="check(ticket.people_num,ticket.price )">
+            <view style="display: flex;justify-content: space-between" v-if="showPic">
+                <p class="test">
+                    {{ ticket.people_num}}人门票  
+                </p>
+                <p class="money">
+                    ¥{{Number(ticket.price)}}
+                </p>
+            </view>
+        </view>
+    </view>
+    <view class="footer" >
+        <view class="discounts">
                 <view class="left" :style="`background:`+themeColors">
                     <image
                         class="icon"
@@ -54,43 +116,9 @@
                     
                 </view>
 	        </u-modal>
-        </view>
-        <!-- 展会信息 -->
-        <view class="title" style="margin:40rpx 0" v-if="showInfo">
-            <view class="colorBox" :style="`background:`+themeColors"></view>
-            <view class="titleStr">展会信息</view>
-        </view>
-        <view class="ticketInfo" v-if="showInfo">
-            <p class="test">
-                {{info.name}}
-            </p>
-            <view class="time">
-                <u-icon :name="timeIcon" size="26"></u-icon>
-                <span>{{info.start_time}}-{{info.end_time}}</span>
-            </view>
-            <view class="time">
-                <u-icon name="map" size="26"></u-icon>
-                <span>{{info.lab_name}}</span>
-            </view>
-        </view>
-        <!-- 订单信息 -->
-        <view class="title" style="margin:40rpx 0" v-if="!showInfo">
-            <view class="colorBox" :style="`background:`+themeColors"></view>
-            <view class="titleStr">订单信息</view>
-        </view>
-        <view class="ticketInfo"  v-if="!showInfo"> 
-            <view class="cell" v-for="(item, index) in showList" :key="index">
-				<text class="cellTitle">{{ item.name }}</text>
-				<text class="cellCon">{{ item.value }}</text>
-			</view>
-        </view>
-        <view  class="checkBtn" :style="`background:`+themeColors" @click="toCenter"   v-if="!showInfo"> 
-            查看门票
-        </view>
-    </view>
-    <view class="footer" v-if="showInfo">
-        <view class="left">
-            <view style="margin-bottom:10rpx"><text>实付款：</text> <text style="color:#FF0000">¥{{info.price-dmoney}}</text></view>
+        <view class="down">
+            <view class="left">
+                <view style="margin-bottom:10rpx" ><text>实付款：</text> <text style="color:#FF0000">¥{{totalPrices}}</text></view>
             <view style="font-size: 28rpx;color: #7F7F7F;"><text>优惠-</text> <text>¥{{dmoney}}</text></view>
         </view>
         <view class="right">
@@ -98,16 +126,18 @@
                 确认支付
             </view>
         </view>
+        </view>
+       
     </view>
     
   </view>
 </template>
 
 <script>
-import {getOpenid,ticket,getTicketOrderInfo,verifyDisCode} from '@/api/pay.js';
+import {getOpenid,verifyDisCode} from '@/api/pay.js';
+import {getExhibitTicketInfo,ticketByWxPay,verifyTicketBySelf} from "@/api/combination"
 import {getMyTicket} from "@/api/register";
 import {getInfo} from "@/api/list.js";
-import log from '@/log.js';
 import config from "@/utils/config";
 export default {
     data() {
@@ -117,58 +147,102 @@ export default {
                 showList:[],
                 open_id:'',
                 info:{},
-                showInfo:false,
                 showPop:false,
                 showRule:false,
+                showPic:true,
                 haveDiscount:false,
                 discount_code:'',
+                totalPrices:0,
                 textd_code:'使用优惠码',
                 dmoney :0,
                 orderInfo:'',
                 ticketInfo:{},
-               
+                checkList:[],
+                actprice:0,
+                current:1,
             }
         },
-        onShow() {
-            getTicketOrderInfo({exhibit_id:uni.getStorageSync("exhibit_id")}).then((res)=>{
-                this.ticketInfo = res.data
-                if(this.ticketInfo.status ==1){
-                    this.showList=[
-                    {name: '支付状态',value: '已支付'},
-                    {name: '实付款',value: this.ticketInfo.price},
-                    {name: '支付方式',value: '微信支付'},
-                    {name: '优惠码',value: this.ticketInfo.discount_code||''},
-                    {name: '订单编号',value: this.ticketInfo.out_order_no},
-                    {name: '创建时间',value: this.ticketInfo.created_at},
-                    {name: '支付时间',value: this.ticketInfo.updated_at},
-                    ]
-                    this.showInfo = false
-                }else{
-                    this.showInfo = true
-                }
+        // onShow() {
+        //     getTicketOrderInfo({exhibit_id:uni.getStorageSync("exhibit_id")}).then((res)=>{
+        //         this.ticketInfo = res.data
+        //         if(this.ticketInfo.status == 1){
+        //             this.showList=[
+        //             {name: '支付状态',value: '已支付'},
+        //             {name: '实付款',value:'¥'+this.ticketInfo.price},
+        //             {name: '支付方式',value: '微信支付'},
+        //             {name: '优惠码',value: this.ticketInfo.discount_code||''},
+        //             {name: '订单编号',value: this.ticketInfo.out_order_no},
+        //             {name: '创建时间',value: this.ticketInfo.created_at},
+        //             {name: '支付时间',value: this.ticketInfo.updated_at},
+        //             ]
+        //             this.showInfo = false
+        //         }else{
+        //             this.showInfo = true
+        //         }
                 
-            })
-        },
-        onLoad() {
+        //     })
+        // },
+        async onLoad(options) {
             uni.showLoading({
 					title: "加载中",
 				});
-            getInfo({
+                console.log( options)
+            if(options.pic){
+                this.showPic = false
+            }
+           if(options.check){
+            await getExhibitTicketInfo({exhibit_id: uni.getStorageSync("exhibit_id"), activity_ids:options.check}).then((res)=>{
+                this.checkList = res.data.exhibitActivities
+                this.checkList.map(item=>{
+                    console.log(item.price)
+                    if(item.price!=null){
+                        this.actprice =  Number(item.price) + this.actprice
+                    }
+                })
+            })
+           }
+          
+           await getInfo({
 				exhibit_id: uni.getStorageSync("exhibit_id"),
 			}).then((res) => {
 					this.info = res.data
+                    this.info.many_tickets = JSON.parse(res.data.many_tickets)
+                    if(this.showPic == false){
+                        this.totalPrices = Number(this.actprice)
+                    }else{
+                        this.totalPrices = Number(this.actprice) + Number(this.info.price)
+                    }
 					uni.hideLoading();
 			});
         },  
         methods:{
+            check(num,money){
+                this.current = num 
+                this.totalPrices = money
+                if(this.dmoney != 0){
+                    if(Number(this.totalPrices)-Number(this.dmoney)<0){
+                        this.totalPrices = 0
+                    }else{
+                        this.totalPrices = this.totalPrices - this.dmoney
+                    }
+                }
+            },
             back() {
                 uni.navigateBack();
              },
+             //优惠码确认是有有效
              confirm(){
+                this.totalPrices = Number(this.actprice) + Number(this.info.price)
                 verifyDisCode({discount_code:this.discount_code,exhibit_id: uni.getStorageSync("exhibit_id")}).then((res)=>{
                     if(res.code ==1){
                         this.showPop =false
-                        this.dmoney  = this.info.price
+                        this.dmoney  = res.data.discount_price
+                        
+                        if(Number(this.totalPrices)-Number(this.dmoney)<0){
+                            this.totalPrices = 0
+                        }else{
+                            this.totalPrices = this.totalPrices - this.dmoney
+                        }
                         this.textd_code = this.discount_code
                         this.haveDiscount = true
                     }else{
@@ -198,20 +272,33 @@ export default {
                                 let obj = {
                                     exhibit_id:that.info.exhibit_id,
                                     trade_type:1,
-                                    openid:res.data.openid
+                                    openid:res.data.openid,
+                                    activity_ids:[],
+                                    type:''
                                 }
                                 //判断优惠券 更改pay_type
                                 if(that.haveDiscount){
-                                    obj.pay_type = 10
                                     obj.discount_code = that.discount_code
-                                }else{
-                                    obj.pay_type = 1
                                 }
+                                if(that.info.many_tickets && that.current !==1){
+                                    obj.people_num = that.current
+                                    obj.type = 0
+                                }else if(that.info.many_tickets && that.current ==1){
+                                    obj.type = 0
+                                }else if(that.checkList.length){
+                                    obj.type = 1
+                                    obj.activity_ids.push(that.checkList.map(res=>{
+                                        return res.activity_id
+                                    }))
+                                }else{
+                                    obj.type = 0
+                                }
+                                obj.activity_ids = obj.activity_ids.join()
                                 //支付
-                                ticket(obj).then((res)=>{
+                                ticketByWxPay(obj).then((res)=>{
                                     that.orderInfo = res.data
                                     //优惠券抵扣
-                                    if(that.haveDiscount){
+                                    if(that.totalPrices == 0 ){
                                         uni.showLoading({
                                             title: "加载中",
                                         });
@@ -223,13 +310,13 @@ export default {
                                         service:'payment',
                                         success:(loginRes)=>{
                                             uni.requestPayment({
-                                            "provider":loginRes.provider[0],
-                                            appid:that.orderInfo.appId,
-                                            timeStamp:that.orderInfo.timeStamp,
-                                            nonceStr:that.orderInfo.nonceStr,
-                                            package: that.orderInfo.package,
-                                            signType:that.orderInfo.signType,
-                                            paySign:that.orderInfo.paySign,
+                                                "provider":loginRes.provider[0],
+                                                appid:that.orderInfo.appId,
+                                                timeStamp:that.orderInfo.timeStamp,
+                                                nonceStr:that.orderInfo.nonceStr,
+                                                package: that.orderInfo.package,
+                                                signType:that.orderInfo.signType,
+                                                paySign:that.orderInfo.paySign,
                                             success:()=>{
                                                 uni.showLoading({
                                                     title: "加载中",
@@ -259,64 +346,24 @@ export default {
              
              },
              toCenter(){
-                uni.switchTab({
-                    url: "/pages/center/index",
-                });
+                getMyTicket({
+							exhibit_id: uni.getStorageSync("exhibit_id"),
+						}).then((res) => {
+                            uni.setStorageSync("tickerInfo", JSON.stringify(res.data));
+                            uni.switchTab({
+                                url: "/pages/center/index",
+                            });
+						})
              },
-             //腾讯广告
-			tencent(){
-                let time  = new Date
-                let action_time = time.now();
-                log.info(uni.getStorageSync("gdt_vid"))
-				uni.request({
-					url:"http://tracking.e.qq.com/conv",
-					method:'POST',
-					header:{'Content-Type' : 'application/json' ,'cache-control': 'no-cache'},
-					data:{
-						"actions":[{
-        							"outer_action_id":"outer_action_identity",// 选填，若上报可能有重复请填写该id，系统会根据该ID进行去重，详见FAQ
-       								"action_time":action_time,
-        							"user_id":{//user_id，可采集到的设备标示
-        								"wechat_unionid":uni.getStorageSync("uniond"),//当为小程序类、公众号和企业微信转化时，此字段与wechat_openid必传其一
-        								"wechat_app_id":"wx8582966c73ac7e3b",//用户发生该行为对应的小程序appid，该字段必填，并确保该appid已对该账户进行了授权（请参考帮助中心-转化归因使用指南-微信小程序转化归因操作手册中的appid授权部分）
-        							},
-       								"action_type":"RESERVATION", // 必填 行为类型
-        							"trace": {
-        								"click_id":uni.getStorageSync("gdt_vid") // 必填 click_id
-        							},
-
-								}]
-						},
-                        
-                    success:(res)=>{
-                        log.info('res=>',res)
-                    },
-                    fail:(err)=>{
-                        log.info('err=>',err)
-                    }
-				})
-			},
              getTicketInfo(){
-                getTicketOrderInfo({exhibit_id:uni.getStorageSync("exhibit_id")}).then((res)=>{
-                if(uni.getStorageSync("gdt_vid")){
-                    this.tencent()
-                }
-                this.ticketInfo = res.data
-                this.showList=[
-                    {name: '支付状态',value: '已支付'},
-                    {name: '实付款',value: this.ticketInfo.price},
-                    {name: '支付方式',value: '微信支付'},
-                    {name: '优惠码',value: this.ticketInfo.discount_code||''},
-                    {name: '订单编号',value: this.ticketInfo.out_order_no},
-                    {name: '创建时间',value: this.ticketInfo.created_at},
-                    {name: '支付时间',value: this.ticketInfo.updated_at},
-                ]
-                this.showInfo = false
                 uni.hideLoading();
-            })
+                verifyTicketBySelf({exhibit_id:uni.getStorageSync('exhibit_id')}).then(((res)=>{
+                    uni.removeStorageSync('self_write_off')
+                }))
+                uni.navigateTo({ url: '/pages_index/pay/info' })
+            }
              }
         }
-}
 </script>
 
 <style lang="scss" scoped> 
@@ -352,39 +399,14 @@ export default {
         }
         .ticketInfo{
             background: #FFF;
+            border: 2rpx solid #FFF;
             border-radius: 20rpx;
             padding: 24rpx 32rpx;
             .money{
-                margin: 22rpx 0 38rpx 0;
                 color: rgba(255, 0, 0, 0.85);
                 font-size: 28rpx;
             }
-            .discounts{
-                display: flex;
-                align-content: center;
-                border-radius: 20rpx;
-                overflow: hidden;
-                .left{
-                    padding: 0 20rpx;
-                    height: 64rpx;
-                    display: flex;
-                    align-items: center;
-                    .icon{
-                        width: 48rpx;
-                        height: 48rpx;
-                    }
-                }
-                .right{
-                    width: 80%;
-                    font-size: 24rpx;
-                    height: 64rpx;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    padding: 0 40rpx;
-                   
-                }
-            }
+        
             .time{
                 display: flex;
                 color: rgb(153, 153, 153);
@@ -429,22 +451,51 @@ export default {
         position: fixed;
         bottom: 0;
         width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        height: 132rpx;
         box-shadow: 0px -2px 4px 0px rgba(0, 0, 0, 0.1);
         background: rgb(255, 255, 255);
         padding-top: 12rpx;
         padding-bottom: 0;
         padding-bottom: constant(safe-area-inset-bottom);
         padding-bottom: calc(env(safe-area-inset-bottom));
-        .left{
-            margin-left:38rpx ;
+        .discounts{
+                display: flex;
+                align-content: center;
+                border-radius: 20rpx;
+                overflow: hidden;
+                margin: 12rpx 38rpx;
+                .left{
+                    padding: 0 20rpx;
+                    height: 64rpx;
+                    display: flex;
+                    align-items: center;
+                    .icon{
+                        width: 48rpx;
+                        height: 48rpx;
+                    }
+                }
+                .right{
+                    width: 80%;
+                    font-size: 24rpx;
+                    height: 64rpx;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 0 40rpx;
+                   
+                }
+            }
+        .down{
+            display: flex;
+             align-items: center;
+             justify-content: space-between;
+            .left{
+                margin-left:38rpx ;
+            }
+            .right{
+                margin-right: 38rpx;
+            }
         }
-        .right{
-            margin-right: 38rpx;
-        }
+
     }
     .subBtn{
             padding: 24rpx 44rpx;

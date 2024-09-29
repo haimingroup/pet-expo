@@ -23,40 +23,35 @@ import {getInfo} from "@/api/list.js";
 				const scene = decodeURIComponent(options.query.scene)
 				console.log(scene)
 				let arr = scene.split(',')
+
 				if(arr[0] == 's'){
 					//展商海报
 					uni.setStorageSync('exhibit_id',arr[1])
-					getInfo({exhibit_id:arr[1]}).then((res)=>{
-						uni.setStorageSync("ceilingImg", res.data.img);
-						uni.setStorageSync('color', res.data.color_main);
-						uni.setStorageSync('color_d', res.data.color_deputy);
-					})
 					uni.setStorageSync('store_id',arr[2])
 					uni.setStorageSync('team_id',arr[3])
 					uni.setStorageSync('toexinfo',1)
 				}else if(arr[0] == 'g'){
 					//产品海报
 					uni.setStorageSync('exhibit_id',arr[1])
-					getInfo({exhibit_id:arr[1]}).then((res)=>{
-						uni.setStorageSync("ceilingImg", res.data.img);
-						uni.setStorageSync('color', res.data.color_main);
-						uni.setStorageSync('color_d', res.data.color_deputy);
-					})
 					uni.setStorageSync('store_id',arr[2])
 					uni.setStorageSync('goods_id',arr[3])
 				}else if(arr[0] == 'f'){
 					//积分扫码
 					uni.setStorageSync('exhibit_id',arr[1])
-					getInfo({exhibit_id:arr[1]}).then((res)=>{
-						uni.setStorageSync("ceilingImg", res.data.img);
-						uni.setStorageSync('color', res.data.color_main);
-						uni.setStorageSync('color_d', res.data.color_deputy);
-					})
 					uni.setStorageSync('score_id',arr[2])
+				}else if(arr[0] == 'v'){
+					//自我核销
+					uni.setStorageSync('exhibit_id',arr[1])
+					uni.setStorageSync('self_write_off','1')
 				}
 				else{
 					uni.setStorageSync('scene', scene)
 				}
+				getInfo({exhibit_id:arr[1]}).then((res)=>{
+						uni.setStorageSync("ceilingImg", res.data.img);
+						uni.setStorageSync('color', res.data.color_main);
+						uni.setStorageSync('color_d', res.data.color_deputy);
+					})
 			}
 			if(options.query.exhibit_id){
 				uni.setStorageSync('exhibit_id',options.query.exhibit_id)

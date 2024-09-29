@@ -1,7 +1,7 @@
 <template>
   <view class="page">
     <!-- 顶部标题栏 -->
-    <u-navbar :fixed="true" :bgColor="bgColor" @leftClick="back">
+    <u-navbar :fixed="true" :bgColor="themeColors" @leftClick="back">
       <view class="navTitle" slot="left">
         <u-icon name="arrow-left" color="#FFF"></u-icon>
         <text style="margin-left: 10rpx">活动详情</text>
@@ -52,9 +52,38 @@
                 {{ item.name }}
               </view>
             </view>
-            <view class="down">
+            <view v-if="item.name =='日程'">
+              <view class="schedule">
+                <view class="sBox" v-for= "acitem,acindex in list.schedule.content" :key="acindex"  :style="'background:'+ themeColors+'D5'">
+                    <viewd style="display: flex;flex-wrap: wrap;"> {{ acitem.schedule_title }}</viewd>
+                    <view style="font-size: 28rpx;margin: 20rpx 0 25rpx 0;"> {{ acitem.time_slot }}</view>
+                    <view> —
+                      <text v-for="name,nindex in acitem.guest_list" :key="nindex">
+                        {{ name.full_name + '  ' }}
+                      </text>
+                    </view>
+                </view>
+              </view>
+            </view>
+            <view v-else-if="item.name =='嘉宾'">
+              <view class="guest" >
+                  <view class="guestBox" @tap="showInfo(guitem.guest_id)" v-for="guitem,guindex in list.guest.content" :key="guindex">
+                    <view><img class="avatar" :src="guitem.avatar" alt=""/></view>
+                    <view style="font-size: 24rpx;color: #000;">{{ guitem.full_name}}</view>
+                    <view style="font-size: 24rpx;margin: 14rpx 0 10rpx 0;">{{ guitem.job_title}}</view>
+                    <!-- {{ guitem.job_title}} -->
+                    <view style="font-size: 24rpx;wdith:396rpx; -webkit-line-clamp: 2;-webkit-box-orient: vertical;overflow: hidden;text-overflow: ellipsis; word-wrap: break-word;display:-webkit-box; ">
+                      {{ guitem.depiction}}
+                    </view>
+                  </view>
+              </view>
+             
+            </view>
+
+            <view v-else class="down">
               {{ item.content }}
             </view>
+            
           </view>
           <view class="clist">
             <view class="up">
@@ -62,7 +91,7 @@
               <view class="acTitle"> 活动介绍 </view>
             </view>
             <view class="down">
-              <rich-text :nodes="info.content"  @tap="handleRich"></rich-text>
+              <rich-text :nodes="info.content" @tap="handleRich"></rich-text>
             </view>
           </view>
         </view>
@@ -80,28 +109,57 @@
         </view>
       </view>
     </view>
+    <u-popup :show="showPop" @close="close">
+        <view class="guestInfo">
+            <view class="popBox" style="display: flex;">
+              <view class="popavatar">
+                <image
+                :src="guestInfo.avatar"
+                mode="scaleToFill"
+              />
+              </view>
+              <view style="margin-left: 60rpx">
+                <view style="margin-bottom:36rpx;font-size: 36rpx;">{{ guestInfo.full_name }}</view>
+                <view style="font-size: 26rpx;">{{ guestInfo.job_title }}</view>
+              </view>
+            </view>
+            <view class="popBox">
+              <view style="font-size: 40rpx;margin-bottom: 20rpx;">简介</view>
+              <view style="margin-left:20rpx;font-size: 24rpx;">{{ guestInfo.depiction }}</view>
+            </view>
+            <view class="popBox">
+              <view style="font-size: 40rpx;margin-bottom: 20rpx;">日程</view>
+              <view style="margin: 0 0 20rpx 20rpx;"  v-for="listItem,listIndex in guestInfo.schedule_list" :key="listIndex">
+                <view>{{ listItem.schedule_title }}</view>
+                <view style="font-size: 24rpx;margin-top: 10rpx;">{{ listItem.time_slot }}</view>
+              </view>
+            </view>
+        </view>
+		  </u-popup>
   </view>
 </template>
 
 <script>
-import { activeGetInfo, activeCollect, activeEnroll } from "@/api/list";
+import { activeCollect, activeEnroll } from "@/api/list";
+import {getACInfo , getGuestInfo } from "@/api/v2";
 export default {
   data() {
     return {
       themeColors: uni.getStorageSync('color'),
-      imgSrc: uni.getStorageSync("ceilingImg"),
-      bgColor: uni.getStorageSync('color'),
+      imgSrc: uni.getStorageSync("ceilingImg"),   
       exhibitId: uni.getStorageSync("exhibit_id"),
       showStar: true, //true为未收藏。
       starLock: false,
       showapply: false,
       bmText: "立即报名",
       info: {},
+      guestInfo: {},
+      showPop: false,
       list: {
-        time: { name: "活动时间", content: "" },
-        local: { name: "活动地点", content: "" },
-        end_num: { name: "活动人数限制", content: "" },
-        sponsor: { name: "活动主办方", content: "" },
+        time: { name: "时间", content: "" },
+        local: { name: "地点", content: "" },
+        sponsor: { name: "主办方", content: "" },
+        end_num: { name: "人数限制", content: "" },
       },
     };
   },
@@ -109,8 +167,8 @@ export default {
     uni.showLoading({
       title: "加载中",
     });
-    activeGetInfo({ activity_id: option.id }).then((res) => {
-      this.info = res.data;
+    getACInfo({ activity_id: option.id }).then((res) => {
+      this.info = res.data.activity;
       //对循环对象进行赋值
       this.list.time.content =
         this.info.start_time.slice(0, 16) +
@@ -119,6 +177,13 @@ export default {
       this.list.local.content = this.info.address; //地点
       this.list.end_num.content = this.info.end_num + "人"; //限制人数
       this.list.local.content = this.info.address; //地点
+      if(res.data.schedule.length != 0){
+        this.list.schedule = {name : '日程',content:res.data.schedule}
+      }
+      if(res.data.guest.length != 0){
+        this.list.guest={name : '嘉宾',content:res.data.guest}
+      }
+      
       this.list.sponsor.content = this.info.sponsor; //主办方
       let newContent = this.info.content.replace(/<img[^>]*>/gi, (match) => {
         match = match
@@ -138,11 +203,11 @@ export default {
         /\<img/gi,
         '<img style="width:100%;height:auto;display:block;margin-top:0;margin-bottom:0;"'
       );
-      if (res.data.enroll == 1) {
+      if (res.data.activity.enroll == 1) {
         this.bmText = "报名成功";
         this.showapply = true;
       }
-      if (res.data.collect == 1) {
+      if (res.data.activity.collect == 1) {
         this.showStar = false;
       }
       uni.hideLoading();
@@ -180,15 +245,7 @@ export default {
       if (this.showapply) {
         return;
       } else {
-        activeEnroll({ activity_id: this.info.activity_id }).then((res) => {
-          if (res.code == 1) {
-            uni.showToast({
-              title: "报名成功",
-            });
-            this.showapply = !this.showapply;
-            this.bmText = "报名成功";
-          }
-        });
+        uni.navigateTo({ url: '/pages_index/pay/list?activity_id='+this.info.activity_id })
       }
     },
     collect() {
@@ -221,6 +278,19 @@ export default {
           });
         }
       }
+    },
+    showInfo(id){
+      uni.showLoading({
+        title: "加载中",
+      });
+      getGuestInfo({guest_id:id}).then((res)=>{
+        this.guestInfo = res.data
+        this.showPop = true;
+        uni.hideLoading()
+      })
+    },
+    close(){
+      this.showPop = false;
     },
     back() {
       uni.navigateBack({
@@ -268,10 +338,10 @@ export default {
       font-size: 32rpx;
       font-weight: 500;
       line-height: 36rpx;
-      text-align: center;
       display: flex;
       .titleText {
         width: 85%;
+        font-weight: 600;
       }
     }
     .star {
@@ -279,6 +349,34 @@ export default {
       height: 50rpx;
     }
   }
+  .schedule{
+    padding-left:30rpx ;
+    .sBox{
+      padding: 24rpx 32rpx ;
+      border-radius: 20rpx;
+      margin-top: 24rpx;
+      font-size: 28rpx;
+      color: #fff;
+    }
+  }
+  .guest{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding-left: 30rpx;
+    .guestBox{
+      margin-top: 20rpx;
+      color: #999999;
+      .avatar{
+        width: 200rpx;
+        height: 200rpx;
+        border-radius: 10rpx;
+      }
+    }
+    .guestBox:nth-child(2n){
+      margin-left: 26rpx;
+    }
+  }
+ 
   .acContent {
     .clist {
       margin-bottom: 20rpx;
@@ -296,7 +394,7 @@ export default {
         }
       }
       .down {
-        margin: 20rpx 0;
+        margin: 20rpx 0 20rpx 30rpx;
         color: rgb(153, 153, 153);
         font-size: 28rpx;
         font-weight: 400;
@@ -304,6 +402,32 @@ export default {
     }
   }
 }
+.guestInfo{
+    height: 50vh;
+    overflow: auto;
+    background: #EFEFEF;
+    padding: 30rpx 24rpx 0 24rpx;
+    padding-bottom: 0;
+    padding-bottom: constant(safe-area-inset-bottom);
+    padding-bottom: calc(50rpx + env(safe-area-inset-bottom));
+    .popBox{
+      width: 91%;
+      background: #fff;
+      border-radius: 20rpx;
+      padding: 32rpx;
+      margin-top: 20rpx;
+      .popavatar{
+        width: 160rpx;
+        height: 160rpx;
+        
+        image{
+          width: 160rpx;
+          height: 160rpx;
+          border-radius: 10rpx;
+        }
+      }
+    }
+  }
 .footerBtn {
   display: flex;
   justify-content: space-around;
@@ -311,9 +435,9 @@ export default {
   top: -60rpx;
   .btn {
     width: 300rpx;
-    height: 78rpx;
+    height: 70rpx;
     text-align: center;
-    line-height: 78rpx;
+    line-height: 70rpx;
     border-radius: 100px;
     color: rgb(255, 255, 255);
     font-size: 32rpx;
@@ -324,18 +448,19 @@ export default {
     font-weight: 600;
     border-radius: 100px;
     width: 300rpx;
-    height: 78rpx;
+    height: 70rpx;
     display: flex;
     align-items: center;
     justify-content: center;
     background: #fff;
-    margin: 0;
     border: 4rpx solid $theme-color;
+    margin: 0;  
   }
   .shareBtn::after{
     border: none;
   }
 }
-
-
+ ::v-deep .u-safe-bottom{
+  background: #EFEFEF;
+}
 </style>

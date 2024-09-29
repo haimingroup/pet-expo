@@ -64,6 +64,7 @@
 </template>
 <script>
 import { getPhone, getAgreement, login } from "@/api/user";
+import {getOpenid} from '@/api/pay.js';
 import config from "@/utils/config";
 export default {
   data() {
@@ -110,8 +111,17 @@ export default {
                   } else {
                   this.isNew = true;
                 }
+               
                 this.lock = true;
               });
+              getOpenid({
+                    js_code: loginRes.code,
+                    iv: infoRes.iv,
+                    encrypted_data: infoRes.encryptedData,
+                    code: config.project,
+                }).then((res)=>{
+                    uni.setStorageSync('openid',res.data.openid)
+                })
             },
           });
         },

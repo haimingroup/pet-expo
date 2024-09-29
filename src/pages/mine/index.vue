@@ -21,12 +21,17 @@
 					<view class="userLevel">
 						<text v-if="userInfo.type == 0" :style="userInfo.type == 0?`background-color: rgba(153, 153, 153, 0.7)` : `background-color: #FF2E2E`">观众</text>
 						<text v-if="userInfo.type == 1" :style="userInfo.type == 0?`background-color: rgba(153, 153, 153, 0.7)` : `background-color: #FF2E2E`">展商</text>
+						<text v-if="userInfo.type == 2" style="background-color: #01D410;">主办方</text>
 						<text v-if="userInfo.store_exhibit" :style="userInfo.type == 0?`background-color: rgba(153, 153, 153, 0.7)` : `background-color: #FF2E2E`">参展商</text>
 					</view>
 				</view>
-				<view class="task" @tap="navigator('/pages_platform/test/index')">
+				<view class="task" v-if="userInfo.type == 1"  @tap="navigator('/pages_platform/test/index')">
 					<u-icon name="bell-fill" color="#FFED00" size="60"></u-icon>
 					<u-badge v-if="userInfo.task_num !=0 " :value="userInfo.task_num" :type="`error`"></u-badge>
+				</view>
+				<!-- 核销功能 -->
+				<view class="task" v-if="userInfo.type == 2" @tap="navigator('/pages_host/verification/index')">
+					<u-icon name="scan" color="#7d7d7d" size="60"></u-icon>
 				</view>
 			</view>
 			

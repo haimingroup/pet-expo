@@ -75,7 +75,72 @@
 			}
 		}
 	],
-	"subPackages": [
+	"subPackages": [{
+		"root": "pages_host",
+		"pages": [
+			{
+				"path": "client/client",
+				"style": {
+					"navigationStyle": "custom",
+					"navigationBarTitleText": "海名口腔展"
+				}
+			},
+			{
+				"path": "check/index",
+				"style": {
+					"navigationStyle": "custom",
+					"navigationBarTitleText": "海名口腔展"
+				}
+			},
+			{
+				"path": "check/match",
+				"style": {
+					"navigationStyle": "custom",
+					"navigationBarTitleText": "海名口腔展"
+				}
+			},
+			{
+				"path": "check/stone",
+				"style": {
+					"navigationStyle": "custom",
+					"navigationBarTitleText": "海名口腔展"
+				}
+			},
+			{
+				"path": "check/product",
+				"style": {
+					"navigationStyle": "custom",
+					"navigationBarTitleText": "海名口腔展"
+				}
+			},
+			{
+				"path": "invite/index",
+				"style": {
+					"navigationStyle": "custom",
+					"navigationBarTitleText": "海名口腔展"
+				}
+			},
+			{
+				"path": "cmeiban/index",
+				"style": {
+					"navigationStyle": "custom",
+					"navigationBarTitleText": "海名口腔展"
+				}
+			},{
+				"path": "verification/index",
+				"style": {
+					"navigationStyle": "custom",
+					"navigationBarTitleText": "海名口腔展"
+				}
+			},{
+				"path": "verification/info",
+				"style": {
+					"navigationStyle": "custom",
+					"navigationBarTitleText": "海名口腔展"
+				}
+			}
+		]
+	},
 		{
 			"root": "pages_index",
 			"pages": [
@@ -90,7 +155,20 @@
 					"path": "pay/index",
 					"style": {
 						"navigationStyle": "custom",
-						"navigationBarTitleText": "海名宠物展"
+						"navigationBarTitleText": "海名口腔展"
+					}
+				},{
+					"path": "pay/list",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "海名口腔展"
+					}
+				},
+				{
+					"path": "pay/info",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "海名口腔展"
 					}
 				},
 				{
