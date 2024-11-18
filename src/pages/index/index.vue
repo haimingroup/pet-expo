@@ -96,7 +96,7 @@
 				<view class="newsContent">
 					<newsBox v-for="item in newsList" :key="item.news_id" :item="item" />
 				</view>
-				<view style="width:100%;text-align: center;margin-top: 40rpx;" @tap="toNews">更多新闻 >></view>
+				<view style="width:100%;text-align: center;margin-top: 40rpx;" @tap="navigator('/pages/news/index');">更多新闻 >></view>
 			</scroll-view>
 		</view>
 
@@ -233,6 +233,7 @@
 							this.newsList = res.data.data;
 						})
 			});
+			
 		},
 		created() {
 			uni.getSystemInfo({
@@ -327,12 +328,10 @@
 				});
 			},
 			toExhibitor() {
-				// uni.switchTab({
-				// 	url: '/pages/exhibitor/index'
-				// })
-				uni.navigateTo({
-					url:'/pages_index/register/index'
+				uni.switchTab({
+					url: '/pages/exhibitor/index'
 				})
+				
 			},
 			toWeb(url) {
 				if (url) {

@@ -1,139 +1,359 @@
 <template>
-	<view class="page">
-		<!-- 顶部标题栏 -->
-		<u-navbar :fixed="true" :bgColor="bgColor">
-			<view class="navTitle" slot="left" :style="'color:' + titleColor">
-				我的
-			</view>
-		</u-navbar>
-		<view class="header">
-			<image style="width: 750rpx; height: 532rpx; display: flex" :src="imgSrc" mode="scaleToFill" />
+  <view class="page">
+    <!-- 顶部标题栏 -->
+    <u-navbar :fixed="true" :bgColor="bgColor">
+      <view class="navTitle" slot="left" :style="'color:' + titleColor">
+        我的
+      </view>
+    </u-navbar>
+    <view class="header">
+      <image
+        style="width: 750rpx; height: 532rpx; display: flex"
+        :src="imgSrc"
+        mode="scaleToFill"
+      />
+    </view>
+    <view class="content">
+      <!-- 用户名称 -->
+      <view class="userInfo">
+        <u-avatar
+          size="168"
+          :src="userInfo.avatar"
+          @tap="
+            navigator('/pages/login/userInfo?info=' + JSON.stringify(userInfo))
+          "
+        ></u-avatar>
+        <img
+          v-if="userInfo.type == 1"
+          :src="levelList[userInfo.grade - 1]"
+          alt=""
+          class="levBox"
+        />
+        <view class="name">
+          <view class="userName">
+            <text v-if="userInfo.nickname">{{ userInfo.nickname }}</text>
+            <text v-else @tap="getUserInfo">登陆/注册</text>
+          </view>
+          <view class="userLevel">
+            <text
+              v-if="userInfo.type == 0"
+              :style="
+                userInfo.type == 0
+                  ? `background-color: rgba(153, 153, 153, 0.7)`
+                  : `background-color: #FF2E2E`
+              "
+              >观众</text
+            >
+            <text
+              v-if="userInfo.type == 1"
+              :style="
+                userInfo.type == 0
+                  ? `background-color: rgba(153, 153, 153, 0.7)`
+                  : `background-color: #FF2E2E`
+              "
+              >展商</text
+            >
+            <text v-if="userInfo.type == 2" style="background-color: #01d410"
+              >主办方</text
+            >
+            <text
+              v-if="userInfo.store_exhibit"
+              :style="
+                userInfo.type == 0
+                  ? `background-color: rgba(153, 153, 153, 0.7)`
+                  : `background-color: #FF2E2E`
+              "
+              >参展商</text
+            >
+          </view>
+        </view>
+        <!-- <view v-if="userInfo.type == 1" class="task" @tap="navigator('/pages_platform/test/index')">
+						<u-icon name="bell-fill" color="#FFED00" size="60"></u-icon>
+						<u-badge v-if="userInfo.task_num !=0 " :value="userInfo.task_num" :type="`error`"></u-badge>
+				</view> -->
+        <!-- 核销功能 -->
+        <view v-if="userInfo.type == 2" class="task" @tap="navigator('/pages_host/verification/index')">
+				<u-icon name="scan" color="#7d7d7d" size="60"></u-icon>
 		</view>
-		<view class="content">
-			<!-- 用户名称 -->
-			<view class="userInfo">
-				<u-avatar size="168" :src="userInfo.avatar"  @tap="navigator('/pages/login/userInfo?info=' + JSON.stringify(userInfo))"></u-avatar>
-				<view class="name">
-					<view class="userName">
-						<text v-if="userInfo.nickname">{{ userInfo.nickname }}</text>
-						<text v-else @tap="getUserInfo">登陆/注册</text>
-					</view>
-					<view class="userLevel">
-						<text v-if="userInfo.type == 0" :style="userInfo.type == 0?`background-color: rgba(153, 153, 153, 0.7)` : `background-color: #FF2E2E`">观众</text>
-						<text v-if="userInfo.type == 1" :style="userInfo.type == 0?`background-color: rgba(153, 153, 153, 0.7)` : `background-color: #FF2E2E`">展商</text>
-						<text v-if="userInfo.type == 2" style="background-color: #01D410;">主办方</text>
-						<text v-if="userInfo.store_exhibit" :style="userInfo.type == 0?`background-color: rgba(153, 153, 153, 0.7)` : `background-color: #FF2E2E`">参展商</text>
-					</view>
-				</view>
-				<view class="task" v-if="userInfo.type == 1"  @tap="navigator('/pages_platform/test/index')">
-					<u-icon name="bell-fill" color="#FFED00" size="60"></u-icon>
-					<u-badge v-if="userInfo.task_num !=0 " :value="userInfo.task_num" :type="`error`"></u-badge>
-				</view>
-				<!-- 核销功能 -->
-				<view class="task" v-if="userInfo.type == 2" @tap="navigator('/pages_host/verification/index')">
-					<u-icon name="scan" color="#7d7d7d" size="60"></u-icon>
-				</view>
-			</view>
-			
-			<!-- 暂时隐藏 -->
-			<view class="functionality">
-				<u-grid :border="false" col="4" @click="clickGrid">
-					<u-grid-item v-for="(item, index) in jglist" :key="index">
-						<view :style="'background-image:url('+item.src+');width: 80rpx;height: 80rpx;background-repeat:no-repeat'" ></view>
-						<view class="grid-text">{{ item.name }}</view>
-					</u-grid-item>
-				</u-grid>
-			</view>
-			<view class="footer" v-if="userInfo.type == 1">
-				<view>平台信息</view>
-				<u-cell-group :border="false">
-					<u-cell  @tap="navigator('/pages_platform/certification/index')" title="资质信息" :isLink="true">
-						<view slot="icon">
-							<view :style="'background-image:url('+cerSrc+');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-position: center center;background-repeat:no-repeat'" ></view>
-						</view>
-					</u-cell>
-					<u-cell  @tap="navigator('/pages_platform/store/index')" title="展商信息" :isLink="true">
-						<view slot="icon">
-							<view :style="'background-image:url('+storeSrc+');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-position: center center;background-repeat:no-repeat'" ></view>
-						</view>
-					</u-cell>
-					<u-cell  @tap="navigator('/pages_platform/exhibit/index')" title="展品信息" :isLink="true">
-						<view slot="icon">
-							<view :style="'background-image:url('+exhSrc+');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-position: center center;background-repeat:no-repeat'" ></view>
-						</view>
-					</u-cell>
-					<u-cell  @tap="navigator('/pages_platform/relation/index')" title="联系信息"  :isLink="true">
-						<view slot="icon">
-							<view :style="'background-image:url('+relSrc+');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-position: center center; background-repeat:no-repeat'" ></view>
-						</view>
-					</u-cell>
-					<u-cell  @tap="toMatch" title="参赛信息" :border="false" :isLink="true">
-						<view slot="icon">
-							<view :style="'background-image:url('+matSrc+');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-position: center center; background-repeat:no-repeat'" ></view>
-						</view>
-					</u-cell>
-				</u-cell-group>
-			</view>
-			<view class="footer" v-if="userInfo.store_exhibit" >
-				<view>参展服务</view>
-				<u-cell-group :border="false">
-					<u-cell  @tap="navigator('/pages_platform/meiban/index')" title="楣板提报" :isLink="true">
-						<view slot="icon">
-							<view :style="'background-image:url('+mSrc+');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-position: center center;background-repeat:no-repeat'" ></view>
-						</view>
-					</u-cell>
-					<u-cell  @tap="navigator('/pages_platform/certificate/index')" title="展商证件" :border="false"  :isLink="true">
-						<view slot="icon">
-							<view :style="'background-image:url('+cersSrc+');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-position: center center;background-repeat:no-repeat'" ></view>
-						</view>
-					</u-cell>
-				</u-cell-group>
-			</view>
-			
-			<view class="footer">
-				<u-cell-group :border="false">
-					<u-cell @tap="navigator('/pages_index/mine/team/index')" title="团队排行" :isLink="true">
+        <view
+          v-if="userInfo.type == 1"
+          class="task"
+          @tap="navigator('/pages_index/pay/list')"
+        >
+          <u-icon name="scan" color="#7d7d7d" size="60"></u-icon>
+        </view>
+      </view>
+
+      <!-- 暂时隐藏 -->
+      <view v-if="userInfo.type !== 2" class="functionality">
+        <u-grid :border="false" col="4" @click="clickGrid">
+          <u-grid-item v-for="(item, index) in jglist" :key="index">
+            <view
+              :style="
+                'background-image:url(' +
+                item.src +
+                ');width: 80rpx;height: 80rpx;background-repeat:no-repeat'
+              "
+            ></view>
+            <view class="grid-text">{{ item.name }}</view>
+          </u-grid-item>
+        </u-grid>
+      </view>
+      <view v-else class="functionality">
+        <u-grid :border="false" col="4" @click="zbfGrid">
+          <u-grid-item v-for="(item, index) in zblist" :key="index">
+            <view
+              :style="
+                'background-image:url(' +
+                item.src +
+                ');width: 80rpx;height: 80rpx;background-repeat:no-repeat'
+              "
+            ></view>
+            <view class="grid-text">{{ item.name }}</view>
+          </u-grid-item>
+        </u-grid>
+      </view>
+      <view class="footer" v-if="userInfo.type == 1">
+        <view>平台信息</view>
+        <u-cell-group :border="false">
+          <u-cell
+            @tap="
+              navigator(
+                '/pages_platform/level/index?current=' + userInfo.grade - 1
+              )
+            "
+            title="会员权益"
+            :isLink="true"
+          >
+            <view slot="icon">
+              <view
+                :style="
+                  'background-image:url(' +
+                  mebSrc +
+                  ');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-position: center center;background-repeat:no-repeat'
+                "
+              ></view>
+            </view>
+          </u-cell>
+          <u-cell
+            @tap="navigator('/pages_platform/certification/index')"
+            title="资质信息"
+            :isLink="true"
+          >
+            <view slot="icon">
+              <view
+                :style="
+                  'background-image:url(' +
+                  cerSrc +
+                  ');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-position: center center;background-repeat:no-repeat'
+                "
+              ></view>
+            </view>
+          </u-cell>
+          <u-cell
+            @tap="navigator('/pages_platform/store/index')"
+            title="展商信息"
+            :isLink="true"
+          >
+            <view slot="icon">
+              <view
+                :style="
+                  'background-image:url(' +
+                  storeSrc +
+                  ');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-position: center center;background-repeat:no-repeat'
+                "
+              ></view>
+            </view>
+          </u-cell>
+          <u-cell
+            @tap="navigator('/pages_platform/exhibit/index')"
+            title="展品信息"
+            :isLink="true"
+          >
+            <view slot="icon">
+              <view
+                :style="
+                  'background-image:url(' +
+                  exhSrc +
+                  ');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-position: center center;background-repeat:no-repeat'
+                "
+              ></view>
+            </view>
+          </u-cell>
+          <u-cell
+            @tap="navigator('/pages_platform/relation/index')"
+            title="联系信息"
+            :isLink="true"
+          >
+            <view slot="icon">
+              <view
+                :style="
+                  'background-image:url(' +
+                  relSrc +
+                  ');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-position: center center; background-repeat:no-repeat'
+                "
+              ></view>
+            </view>
+          </u-cell>
+          <u-cell
+            @tap="toMatch"
+            title="参赛信息"
+            :border="false"
+            :isLink="true"
+          >
+            <view slot="icon">
+              <view
+                :style="
+                  'background-image:url(' +
+                  matSrc +
+                  ');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-position: center center; background-repeat:no-repeat'
+                "
+              ></view>
+            </view>
+          </u-cell>
+        </u-cell-group>
+      </view>
+      <view class="footer" v-if="userInfo.store_exhibit">
+        <view>参展服务</view>
+        <u-cell-group :border="false">
+          <u-cell
+            @tap="navigator('/pages_platform/meiban/index')"
+            title="楣板提报"
+            :isLink="true"
+          >
+            <view slot="icon">
+              <view
+                :style="
+                  'background-image:url(' +
+                  mSrc +
+                  ');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-position: center center;background-repeat:no-repeat'
+                "
+              ></view>
+            </view>
+          </u-cell>
+          <u-cell
+            @tap="navigator('/pages_platform/certificate/index')"
+            title="展商证件"
+            :border="false"
+            :isLink="true"
+          >
+            <view slot="icon">
+              <view
+                :style="
+                  'background-image:url(' +
+                  cersSrc +
+                  ');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-position: center center;background-repeat:no-repeat'
+                "
+              ></view>
+            </view>
+          </u-cell>
+        </u-cell-group>
+      </view>
+
+      <view class="footer">
+      <u-cell-group :border="false">
+        <u-cell
+          v-if="userInfo.type !== 2"
+          @tap="navigator('/pages_index/mine/team/index')"
+          title="团队排行"
+          :isLink="true"
+        >
+          <view slot="icon">
+            <view
+              :style="
+                'background-image:url(' +
+                cupSrc +
+                ');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-repeat:no-repeat'
+              "
+            >
+            </view>
+          </view>
+        </u-cell>
+        <u-cell
+          title="我的积分"
+          v-if="userInfo.type !== 2"
+          @tap="navigator('/pages_platform/integral/index')"
+          :isLink="true"
+        >
+          <view slot="icon">
+            <view
+              :style="
+                'background-image:url(' +
+                levelSrc +
+                ');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-repeat:no-repeat'
+              "
+            ></view>
+          </view>
+        </u-cell>
+        <u-cell
+          v-if="userInfo.type !== 2"
+          @tap="navigator('/pages_index/mine/contact/index')"
+          title="联系我们"
+          :isLink="true"
+        >
+          <view slot="icon">
+            <view
+              :style="
+                'background-image:url(' +
+                callSrc +
+                ');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-repeat:no-repeat'
+              "
+            ></view>
+          </view>
+        </u-cell>
+        <u-cell
+          @tap="showExit = true"
+          title="退出登录"
+          :border="false"
+          :isLink="true"
+        >
+          <view slot="icon">
+            <view
+              :style="
+                'background-image:url(' +
+                exitSrc +
+                ');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-repeat:no-repeat'
+              "
+            ></view>
+          </view>
+        </u-cell>
+        <u-modal
+          :show="showExit"
+          :title="title"
+          confirmColor="red"
+          showCancelButton
+          @confirm="exit"
+          @cancel="showExit = false"
+        >
+          <view>确认退出?</view>
+        </u-modal>
+      </u-cell-group>
+      <!-- <u-cell v-if="userInfo.type == 2" @tap="channl" title="测试用勿点" :isLink="true">
 						<view slot="icon">
 							<view
 								:style="'background-image:url('+cupSrc+');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-repeat:no-repeat'">
 							</view>
 						</view>
-					</u-cell>
-					<u-cell title="我的积分"  @tap="navigator('/pages_platform/integral/index')" :isLink="true">
-						<view slot="icon">
-							<view :style="'background-image:url('+levelSrc+');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-repeat:no-repeat'" ></view>
-						</view>
-					</u-cell>
-					<u-cell  @tap="navigator('/pages_index/mine/contact/index')" title="联系我们" :isLink="true">
-						<view slot="icon">
-							<view :style="'background-image:url('+callSrc+');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-repeat:no-repeat'" ></view>
-						</view>
-					</u-cell>
-					<u-cell @tap="showExit = true" title="退出登录" :border="false" :isLink="true">
-						<view slot="icon">
-							<view :style="'background-image:url('+exitSrc+');width: 48rpx;height: 48rpx;margin-right: 40rpx;background-repeat:no-repeat'" ></view>
-						</view>
-					</u-cell>
-					<u-modal :show="showExit" :title="title" confirmColor="red" showCancelButton @confirm="exit"
-						@cancel="showExit = false">
-						<view>确认退出?</view>
-					</u-modal>
-				</u-cell-group>
-			</view>
-		</view>
-		<m-tabbar name="new" ref="tabbar" native :beforeChange="onBeforeChange">
-			<template v-slot:tabbar_index_2>
-				<view class="custom_style">
-					<image class="btnImg" src="../../static/tarBar/center.png" mode=""></image>
-					<text>{{ cneterTitle }}</text>
-				</view>
-			</template>
-		</m-tabbar>
-	</view>
+					</u-cell> -->
+    </view>
+    <m-tabbar name="new" ref="tabbar" native :beforeChange="onBeforeChange">
+      <template v-slot:tabbar_index_2>
+        <view class="custom_style">
+          <image
+            class="btnImg"
+            src="../../static/tarBar/center.png"
+            mode=""
+          ></image>
+          <text>{{ cneterTitle }}</text>
+        </view>
+      </template>
+    </m-tabbar>
+  	</view>
+  </view>
 </template>
 
 <script>
-	import {
+import {
 		getInfo,
 		getMyTeamInfoE
 	} from "@/api/v2";
@@ -160,6 +380,10 @@
 				cneterTitle: config.center,
 				homeList: {},
 				slider: [],
+				levelList:['https://qdhaiming.oss-cn-qingdao.aliyuncs.com/XCX/VIP/1.png',
+							'https://qdhaiming.oss-cn-qingdao.aliyuncs.com/XCX/VIP/2.png',
+							'https://qdhaiming.oss-cn-qingdao.aliyuncs.com/XCX/VIP/3.png',
+							'https://qdhaiming.oss-cn-qingdao.aliyuncs.com/XCX/VIP/4.png'],
 				showExit: false,
 				titleColor: "rgb(255,255,255)",
 				//元素滚动值
@@ -167,6 +391,7 @@
 				//顶部标题栏背景色
 				bgColor: "rgba(0,0,0,0)",
 				userInfo: {},
+				mebSrc:'<svg width="24.000000" height="24.000000" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path id="Vector" d="M21.68 2.45L19.87 2.45L19.87 0.89C19.87 0.78 19.85 0.66 19.8 0.55C19.75 0.44 19.68 0.34 19.59 0.26C19.5 0.17 19.39 0.1 19.27 0.06C19.15 0.02 19.02 -0.01 18.89 0L5.43 0C5.17 0 4.92 0.09 4.73 0.26C4.55 0.43 4.45 0.66 4.45 0.89L4.45 2.45L2.57 2.45C1.98 2.44 1.4 2.63 0.96 3C0.52 3.37 0.27 3.89 0.24 4.43L0.24 8.31C0.24 8.58 0.31 8.85 0.43 9.1C0.56 9.34 0.74 9.56 0.96 9.74L5.77 13.65C6.38 14.46 7.19 15.13 8.11 15.63C9.04 16.13 10.08 16.44 11.15 16.53L11.15 18.46L7.95 18.46C7.38 18.47 6.82 18.67 6.4 19.02C5.97 19.38 5.7 19.87 5.65 20.39L5.45 21.59C5.41 21.9 5.44 22.21 5.54 22.5C5.63 22.79 5.8 23.06 6.02 23.29C6.23 23.51 6.5 23.69 6.8 23.82C7.1 23.94 7.43 24 7.76 24L16.56 24C16.89 23.99 17.21 23.93 17.51 23.8C17.81 23.68 18.08 23.5 18.3 23.27C18.52 23.04 18.68 22.78 18.78 22.49C18.87 22.2 18.9 21.89 18.86 21.59L18.66 20.39C18.59 19.88 18.31 19.42 17.89 19.08C17.46 18.74 16.92 18.55 16.36 18.55L13.14 18.55L13.14 16.56C14.25 16.46 15.33 16.14 16.28 15.61C17.24 15.08 18.05 14.36 18.66 13.51L23.27 9.75C23.5 9.57 23.68 9.35 23.8 9.1C23.93 8.85 23.99 8.58 24 8.31L24 4.43C23.98 4.17 23.92 3.9 23.79 3.66C23.67 3.41 23.5 3.19 23.28 3C23.07 2.82 22.82 2.68 22.54 2.58C22.26 2.49 21.97 2.45 21.68 2.45ZM2.21 8.31L2.21 4.43C2.21 4.37 2.35 4.26 2.57 4.26L4.45 4.26L4.45 9.76C4.45 9.91 4.45 10.04 4.45 10.17L2.21 8.31ZM15.3 7.83L14.44 8.61L14.63 9.7C14.66 9.87 14.65 10.04 14.58 10.2C14.51 10.35 14.4 10.49 14.25 10.59C14.09 10.71 13.9 10.78 13.69 10.79C13.53 10.79 13.38 10.76 13.24 10.69L12.12 10.14L11.04 10.65C10.88 10.73 10.7 10.77 10.52 10.76C10.33 10.75 10.16 10.69 10.01 10.59C9.86 10.49 9.75 10.35 9.68 10.2C9.61 10.04 9.59 9.87 9.62 9.7L9.83 8.61L8.95 7.83C8.82 7.71 8.73 7.56 8.68 7.4C8.64 7.24 8.64 7.07 8.7 6.91C8.76 6.75 8.86 6.6 9.01 6.5C9.15 6.39 9.32 6.32 9.5 6.29L10.81 6.13L11.35 5.13C11.44 4.99 11.57 4.88 11.72 4.8C11.88 4.72 12.05 4.68 12.23 4.68C12.41 4.68 12.58 4.72 12.74 4.8C12.89 4.88 13.02 4.99 13.11 5.13L13.65 6.13L14.86 6.29C15.04 6.32 15.2 6.39 15.34 6.5C15.48 6.61 15.58 6.75 15.64 6.91C15.69 7.07 15.69 7.25 15.63 7.41C15.58 7.58 15.47 7.72 15.33 7.83L15.3 7.83ZM16.35 20.29C16.44 20.29 16.52 20.32 16.58 20.37C16.65 20.42 16.69 20.5 16.7 20.58L16.9 21.77C16.9 21.82 16.9 21.87 16.88 21.92C16.87 21.96 16.84 22 16.81 22.04C16.77 22.08 16.73 22.11 16.68 22.13C16.64 22.15 16.58 22.16 16.53 22.16L7.76 22.16C7.71 22.16 7.66 22.15 7.61 22.13C7.57 22.11 7.53 22.08 7.5 22.04C7.46 22.01 7.43 21.96 7.41 21.92C7.4 21.87 7.39 21.82 7.4 21.77L7.59 20.58C7.6 20.5 7.65 20.42 7.71 20.37C7.78 20.32 7.87 20.29 7.95 20.29L16.35 20.29ZM21.96 8.39L19.86 10.12C19.86 10 19.86 9.88 19.86 9.76L19.86 4.26L21.68 4.26C21.9 4.26 22.03 4.37 22.03 4.43L21.96 8.39Z" fill="#ACD41D" fill-opacity="1.000000" fill-rule="nonzero"/></svg>',
 				//资质信息
 				cerSrc:'<svg width="20.000000" height="17.000000" viewBox="0 0 20 17" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path id="Vector" d="M15.27 2.43L14.88 2.43C14.55 0.52 12.99 -0.94 11.12 -0.94L1.29 -0.94C0.03 -0.94 -1 0.16 -1 1.5C-1 1.59 -0.98 1.67 -0.97 1.76C-0.98 1.8 -1 1.84 -1 1.89L-1 13.19C-1 15.25 0.68 16.93 2.73 16.93L15.27 16.93C17.32 16.93 19 15.25 19 13.19L19 6.16C19 4.1 17.32 2.43 15.27 2.43ZM14.71 10.94C14.02 10.94 13.45 10.38 13.45 9.68C13.45 8.98 14.02 8.41 14.71 8.41C15.41 8.41 15.98 8.98 15.98 9.68C15.98 10.38 15.41 10.94 14.71 10.94ZM1.29 0.56L11.12 0.56C12.17 0.56 13.05 1.35 13.34 2.43L1.29 2.43C0.85 2.43 0.5 2.01 0.5 1.5C0.5 0.98 0.85 0.56 1.29 0.56Z" fill="#ACD41D" fill-opacity="1.000000" fill-rule="nonzero"/></svg>',
 				//店铺信息
@@ -208,6 +433,28 @@
 						name: "我的团队",
 						src: '<svg width="40.000000" height="40.000000" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path id="Vector" d="M14.73 19.31C18.2 19.31 21.01 16.5 21.01 13.03C21.01 9.56 18.2 6.75 14.73 6.75C11.26 6.75 8.44 9.56 8.44 13.03C8.44 16.5 11.26 19.31 14.73 19.31Z" fill="#ACD41D" fill-opacity="1.000000" fill-rule="nonzero"/><path id="Vector" d="M26.93 29.13L26.93 32C26.93 32.68 26.38 33.25 25.68 33.25L4.58 33.25C3.89 33.25 3.33 32.68 3.33 32L3.33 29.13C3.33 25.11 6.59 21.85 10.61 21.85L19.64 21.85C20.46 21.85 21.25 21.98 21.98 22.25C21.98 22.25 21.98 22.23 22 22.25C24.86 23.21 26.93 25.93 26.93 29.13Z" fill="#ACD41D" fill-opacity="1.000000" fill-rule="nonzero"/><path id="Vector" d="M26.93 29.13L26.93 32C26.93 32.68 26.38 33.25 25.68 33.25L4.58 33.25C3.89 33.25 3.33 32.68 3.33 32L3.33 29.13C3.33 25.11 6.59 21.85 10.61 21.85L19.64 21.85C20.46 21.85 21.25 21.98 21.98 22.25C21.98 22.25 21.98 22.23 22 22.25C24.86 23.21 26.93 25.93 26.93 29.13Z" fill="#ACD41D" fill-opacity="1.000000" fill-rule="nonzero"/><path id="Vector" d="M36.66 27.7L36.66 30.05C36.66 30.6 36.21 31.05 35.66 31.05L29.43 31.05L29.43 29.13C29.43 27.45 29 25.85 28.25 24.46C27.93 23.9 27.58 23.36 27.18 22.88C26.89 22.56 26.61 22.25 26.31 21.98L30.95 21.98C31.13 21.98 31.3 21.98 31.46 22.01C31.68 22.03 31.89 22.06 32.11 22.11C33.38 22.38 34.48 23.08 35.3 24.01C35.43 24.16 35.56 24.33 35.68 24.51C35.7 24.51 35.7 24.51 35.68 24.53C36 25 36.25 25.5 36.41 26.05C36.46 26.23 36.51 26.41 36.55 26.6C36.63 26.95 36.66 27.31 36.66 27.7Z" fill="#ACD41D" fill-opacity="1.000000" fill-rule="nonzero"/><path id="Vector" d="M32.28 14.1C32.28 16.85 30.05 19.08 27.3 19.08C24.54 19.08 22.31 16.85 22.31 14.1C22.31 11.34 24.54 9.11 27.3 9.11C30.05 9.11 32.28 11.34 32.28 14.1Z" fill="#ACD41D" fill-opacity="1.000000" fill-rule="evenodd"/></svg>',
 						url: "/pages_index/mine/myTeam/index",
+					},
+				],
+				zblist: [
+					{
+						name: "我的客户",
+						src: '<svg width="40.000000" height="40.000000" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path id="Card" d="M0 12L0 28.6667C0 31.4281 2.23859 33.6667 5 33.6667L35 33.6667C37.7614 33.6667 40 31.4281 40 28.6667L40 12C40 9.23857 37.7614 7 35 7L5 7C2.23859 7 0 9.23857 0 12ZM35 25.3333L28.3333 25.3333C27.4128 25.3333 26.6667 24.5871 26.6667 23.6667C26.6667 22.7463 27.4128 22 28.3333 22L35 22C35.9205 22 36.6667 22.7463 36.6667 23.6667C36.6667 24.5871 35.9205 25.3333 35 25.3333ZM35 18.6667L5 18.6667C4.07953 18.6667 3.33331 17.9204 3.33331 17C3.33331 16.0796 4.07953 15.3333 5 15.3333L35 15.3333C35.9205 15.3333 36.6667 16.0796 36.6667 17C36.6667 17.9204 35.9205 18.6667 35 18.6667Z" fill="#ACD41D" fill-opacity="1.000000" fill-rule="nonzero"/><path id="Card" d="M0 28.6667C0 31.4281 2.23859 33.6667 5 33.6667L35 33.6667C37.7614 33.6667 40 31.4281 40 28.6667L40 12C40 9.23857 37.7614 7 35 7L5 7C2.23859 7 0 9.23857 0 12L0 28.6667ZM28.3333 25.3333C27.4128 25.3333 26.6667 24.5871 26.6667 23.6667C26.6667 22.7463 27.4128 22 28.3333 22L35 22C35.9205 22 36.6667 22.7463 36.6667 23.6667C36.6667 24.5871 35.9205 25.3333 35 25.3333L28.3333 25.3333ZM5 18.6667C4.07953 18.6667 3.33331 17.9204 3.33331 17C3.33331 16.0796 4.07953 15.3333 5 15.3333L35 15.3333C35.9205 15.3333 36.6667 16.0796 36.6667 17C36.6667 17.9204 35.9205 18.6667 35 18.6667L5 18.6667Z" stroke="#707070" stroke-opacity="0" stroke-width="1.000000"/></svg>',
+						url: "/pages_host/client/client",
+					},
+					{
+						name: "资料审核",
+						src: '<svg width="40.000000" height="40.000000" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path id="Vector" d="M27.08 3.33L12.91 3.33C10.38 3.33 8.33 5.38 8.33 7.91L8.33 33.73C8.33 34.9 9 35.93 10.06 36.4C11.13 36.86 12.33 36.68 13.2 35.9C14 35.18 14.79 34.45 15.61 33.7C16.98 32.43 18.36 31.18 19.73 30C19.88 29.86 20.09 29.86 20.25 30C21.61 31.18 22.98 32.43 24.34 33.68C25.16 34.43 25.98 35.18 26.81 35.91C27.36 36.4 28.04 36.66 28.75 36.66C29.14 36.66 29.56 36.58 29.95 36.4C31.01 35.91 31.68 34.9 31.68 33.73L31.68 7.9C31.66 5.38 29.61 3.33 27.08 3.33Z" fill="#ACD41D" fill-opacity="1.000000" fill-rule="nonzero"/></svg>',
+						url: "/pages_host/check/index",
+					},
+					{
+						name: "楣板确定",
+						src: '<svg width="40.000000" height="40.000000" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path id="Vector" d="M6.05 36.66C6.73 36.66 7.3 36.09 7.3 35.41L7.3 30.06L7.3 24.68L16.83 24.68C17.75 24.68 18.5 23.93 18.5 23.01L18.5 22.18L18.5 5.83L18.5 4.99C18.5 4.08 17.75 3.33 16.83 3.33L6.05 3.33C5.36 3.33 4.8 3.89 4.8 4.58L4.8 18.28L4.8 23.43L4.8 30.06L4.8 35.41C4.8 36.09 5.35 36.66 6.05 36.66Z" fill="#ACD41D" fill-opacity="1.000000" fill-rule="nonzero"/><path id="Vector" d="M22.66 28.1L32.06 28.1C33.43 28.1 34.59 27.33 35.03 26.14C35.14 25.85 35.2 25.53 35.2 25.21C35.2 24.45 34.86 23.71 34.21 23.16L29.2 18.88C28.66 18.41 28.36 17.83 28.36 17.21C28.36 16.6 28.66 16.01 29.2 15.54L34.21 11.26C35.11 10.49 35.43 9.34 35.03 8.28C34.59 7.09 33.43 6.33 32.06 6.33L22.66 6.33C21.75 6.33 21 7.08 21 7.99L21 8.83L21 25.6L21 26.43C21 27.35 21.75 28.1 22.66 28.1Z" fill="#ACD41D" fill-opacity="1.000000" fill-rule="nonzero"/></svg>',
+						url: "/pages_host/cmeiban/index",
+					},
+					{
+						name: "我的邀请",
+						src: '<svg width="40.000000" height="40.000000" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path id="Vector" d="M14.73 19.31C18.2 19.31 21.01 16.5 21.01 13.03C21.01 9.56 18.2 6.75 14.73 6.75C11.26 6.75 8.44 9.56 8.44 13.03C8.44 16.5 11.26 19.31 14.73 19.31Z" fill="#ACD41D" fill-opacity="1.000000" fill-rule="nonzero"/><path id="Vector" d="M26.93 29.13L26.93 32C26.93 32.68 26.38 33.25 25.68 33.25L4.58 33.25C3.89 33.25 3.33 32.68 3.33 32L3.33 29.13C3.33 25.11 6.59 21.85 10.61 21.85L19.64 21.85C20.46 21.85 21.25 21.98 21.98 22.25C21.98 22.25 21.98 22.23 22 22.25C24.86 23.21 26.93 25.93 26.93 29.13Z" fill="#ACD41D" fill-opacity="1.000000" fill-rule="nonzero"/><path id="Vector" d="M26.93 29.13L26.93 32C26.93 32.68 26.38 33.25 25.68 33.25L4.58 33.25C3.89 33.25 3.33 32.68 3.33 32L3.33 29.13C3.33 25.11 6.59 21.85 10.61 21.85L19.64 21.85C20.46 21.85 21.25 21.98 21.98 22.25C21.98 22.25 21.98 22.23 22 22.25C24.86 23.21 26.93 25.93 26.93 29.13Z" fill="#ACD41D" fill-opacity="1.000000" fill-rule="nonzero"/><path id="Vector" d="M36.66 27.7L36.66 30.05C36.66 30.6 36.21 31.05 35.66 31.05L29.43 31.05L29.43 29.13C29.43 27.45 29 25.85 28.25 24.46C27.93 23.9 27.58 23.36 27.18 22.88C26.89 22.56 26.61 22.25 26.31 21.98L30.95 21.98C31.13 21.98 31.3 21.98 31.46 22.01C31.68 22.03 31.89 22.06 32.11 22.11C33.38 22.38 34.48 23.08 35.3 24.01C35.43 24.16 35.56 24.33 35.68 24.51C35.7 24.51 35.7 24.51 35.68 24.53C36 25 36.25 25.5 36.41 26.05C36.46 26.23 36.51 26.41 36.55 26.6C36.63 26.95 36.66 27.31 36.66 27.7Z" fill="#ACD41D" fill-opacity="1.000000" fill-rule="nonzero"/><path id="Vector" d="M32.28 14.1C32.28 16.85 30.05 19.08 27.3 19.08C24.54 19.08 22.31 16.85 22.31 14.1C22.31 11.34 24.54 9.11 27.3 9.11C30.05 9.11 32.28 11.34 32.28 14.1Z" fill="#ACD41D" fill-opacity="1.000000" fill-rule="evenodd"/></svg>',
+						url: "/pages_host/invite/index",
 					},
 				],
 			};
@@ -259,7 +506,8 @@
 				this.svgToUrl(this.relSrc),
 				this.svgToUrl(this.matSrc),
 				this.svgToUrl(this.mSrc),
-				this.svgToUrl(this.cersSrc)
+				this.svgToUrl(this.cersSrc),
+				this.svgToUrl(this.mebSrc)
 			];
 			//此处通过正则，修改svg图片颜色  这里是下方单元格
 			this.cupSrc = this.changeColor(arr[0],uni.getStorageSync('color'))
@@ -273,13 +521,15 @@
 			this.matSrc = this.changeColor(arr[8],uni.getStorageSync('color'))
 			this.mSrc = this.changeColor(arr[9],uni.getStorageSync('color'))
 			this.cersSrc = this.changeColor(arr[10],uni.getStorageSync('color'))
-
+			this.mebSrc = this.changeColor(arr[11],uni.getStorageSync('color'))
 			//金刚区
 			let jarr =[this.svgToUrl(this.jglist[0].src),this.svgToUrl(this.jglist[1].src),this.svgToUrl(this.jglist[2].src),this.svgToUrl(this.jglist[3].src)];
-			this.jglist[0].src =this.changeColor(jarr[0],uni.getStorageSync('color'))
-			this.jglist[1].src =this.changeColor(jarr[1],uni.getStorageSync('color'))
-			this.jglist[2].src =this.changeColor(jarr[2],uni.getStorageSync('color'))
-			this.jglist[3].src =this.changeColor(jarr[3],uni.getStorageSync('color'))
+			for(let i=0;i<4;i++){
+				this.jglist[i].src =this.changeColor(jarr[i],uni.getStorageSync('color'))
+			}
+			for(let i=0;i<4;i++){
+				this.zblist[i].src =this.changeColor(jarr[i],uni.getStorageSync('color'))
+			}
 			getSlider({
 				exhibit_id: uni.getStorageSync("exhibit_id"),
 			}).then((res) => {
@@ -299,6 +549,9 @@
 						this.navigator('/pages_platform/match/index')
 					}
 				})
+			},
+			zbfGrid(name){
+				this.navigator(this.zblist[name].url)
 			},
 			clickGrid(name) {
 				console.log(name)
@@ -352,12 +605,6 @@
 							uni.switchTab({
 								url: "/pages/center/index",
 							});
-						}
-						if(res.code == 23){
-							uni.setStorageSync('webviewUrl', res.data.url)
-							uni.navigateTo({
-								url: "/pages_index/webview/index"
-							})
 						}
 						if(res.code == 24){
 							uni.navigateTo({
@@ -499,14 +746,19 @@
 			align-items: center;
 			position: relative;
 			margin-bottom: 50rpx;
-
+			.levBox{
+				width: 176rpx;
+				height: 176rpx;
+				position: absolute;
+				left: 36rpx;
+			}
 			.name {
 				margin-left: 34rpx;
 				width: auto;
 
 				.userName {
 					word-wrap: break-word;
-					width: 350rpx;
+					width: 370rpx;
 					color: rgb(0, 0, 0);
 					font-size: 40rpx;
 					font-weight: 500;
@@ -574,6 +826,7 @@
 	}
 	.task{
 		position: relative;
+		left: -40rpx;
 	}
 	::v-deep .u-badge {
 		position: absolute;

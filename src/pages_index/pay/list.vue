@@ -34,7 +34,7 @@
                 <view class="dec" v-if="checkList.includes(item.activity_id)">
                     权益说明
                     <view v-for="info,index1 in item.equities" :key="index1">
-                        {{ info.title }}:{{ info.dec }}
+                        {{ info.title }}
                     </view>
                 </view>
             </view>
@@ -84,7 +84,6 @@ export default {
     },
     methods:{
         topay(){
-          
             if(this.pay == 1 ){
                 uni.navigateTo({ url: '/pages_index/pay/index?check='+this.checkList})
             }

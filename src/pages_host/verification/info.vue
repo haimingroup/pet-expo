@@ -16,7 +16,7 @@
                     <view class="li">手机号 : {{ info.user_info_one.phone}}</view>
                     <view class="li">公司职位 : {{ info.user_info_one.company_name }}</view>
                     <view class="li">门票类型 : <text v-if="info.people_num">{{ info.people_num }}人票</text><text v-else>单人票</text></view>
-                    <view class="li" v-if="!showFooter">已核销次数 : {{ info.verify_times }}次</view>
+                    <view class="li">已核销次数 : {{ info.verify_times||0 }}次</view>
                 </view>
                 <view class="one" style="margin-top: 30rpx;" v-if="info.activities">
                     <view class="title">

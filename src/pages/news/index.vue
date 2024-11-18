@@ -99,7 +99,7 @@
 				this.list = res.data;
 				this.list.unshift({
 						news_cate_id: 0,
-      					cate_name: "本展咨询",
+      					cate_name: "本展资讯",
 						exhibit_id: uni.getStorageSync("exhibit_id"),
 					}) 
 				this.current_news_cate_id = this.list[0].news_cate_id;

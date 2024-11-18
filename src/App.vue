@@ -2,16 +2,19 @@
 import {getInfo} from "@/api/list.js";
 	export default {
 		onLaunch: function(options) {
-
+			if(options.channel){
+				let logger = wx.getRealtimeLogManager()
+				uni.setStorageSync('channel',options.channel)
+				uni.setStorageSync('click_id',options.click_id)	
+				logger.info(options.click_id)
+			}
 			if(uni.getStorageSync('token')){
 				if(uni.getStorageSync('defaultTim '!==false)){
 					
 					 uni.clearStorageSync();
 				}else{
 					let timestamp = Date.now();
-				  if(uni.getStorageSync('defaultTime') < timestamp){
-					console.log(uni.getStorageSync('defaultTime') , timestamp)
-					
+				  if(uni.getStorageSync('defaultTime') < timestamp){					
 					uni.clearStorageSync();
 				  }
 				}
@@ -20,10 +23,20 @@ import {getInfo} from "@/api/list.js";
 			}
 			
 			if(options.query.scene){
+				uni.removeStorageSync('self_write_off')
+				uni.removeStorageSync('team_id')
+				uni.removeStorageSync('store_id')
+				uni.removeStorageSync('goods_id')
+				uni.removeStorageSync('toexinfo')
+				uni.removeStorageSync('score_id')
 				const scene = decodeURIComponent(options.query.scene)
 				console.log(scene)
 				let arr = scene.split(',')
-
+				getInfo({exhibit_id:arr[1]}).then((res)=>{
+					uni.setStorageSync("ceilingImg", res.data.img);
+					uni.setStorageSync('color', res.data.color_main);
+					uni.setStorageSync('color_d', res.data.color_deputy);
+				})
 				if(arr[0] == 's'){
 					//展商海报
 					uni.setStorageSync('exhibit_id',arr[1])
@@ -47,11 +60,7 @@ import {getInfo} from "@/api/list.js";
 				else{
 					uni.setStorageSync('scene', scene)
 				}
-				getInfo({exhibit_id:arr[1]}).then((res)=>{
-						uni.setStorageSync("ceilingImg", res.data.img);
-						uni.setStorageSync('color', res.data.color_main);
-						uni.setStorageSync('color_d', res.data.color_deputy);
-					})
+				
 			}
 			if(options.query.exhibit_id){
 				uni.setStorageSync('exhibit_id',options.query.exhibit_id)

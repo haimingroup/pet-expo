@@ -307,3 +307,10 @@ export function getLintel(data) {
 	})
 }
 
+// 找回门票
+export function findTicket(data) {
+	return apiPost({
+		url: '/v2/user/findTicket',
+		data: data
+	})
+}

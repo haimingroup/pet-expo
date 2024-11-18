@@ -173,9 +173,6 @@
 					url: "/pages_index/mine/myTeam/index",
 				});
 			},
-			submit() {
-				addTicket().then(() => {});
-			},
 		},
 	};
 </script>

@@ -162,26 +162,6 @@ export default {
                 current:1,
             }
         },
-        // onShow() {
-        //     getTicketOrderInfo({exhibit_id:uni.getStorageSync("exhibit_id")}).then((res)=>{
-        //         this.ticketInfo = res.data
-        //         if(this.ticketInfo.status == 1){
-        //             this.showList=[
-        //             {name: '支付状态',value: '已支付'},
-        //             {name: '实付款',value:'¥'+this.ticketInfo.price},
-        //             {name: '支付方式',value: '微信支付'},
-        //             {name: '优惠码',value: this.ticketInfo.discount_code||''},
-        //             {name: '订单编号',value: this.ticketInfo.out_order_no},
-        //             {name: '创建时间',value: this.ticketInfo.created_at},
-        //             {name: '支付时间',value: this.ticketInfo.updated_at},
-        //             ]
-        //             this.showInfo = false
-        //         }else{
-        //             this.showInfo = true
-        //         }
-                
-        //     })
-        // },
         async onLoad(options) {
             uni.showLoading({
 					title: "加载中",
@@ -232,7 +212,17 @@ export default {
              },
              //优惠码确认是有有效
              confirm(){
-                this.totalPrices = Number(this.actprice) + Number(this.info.price)
+                if(!this.info.many_tickets){
+                    this.totalPrices = Number(this.actprice) + Number(this.info.price)
+                }else{
+                    if(this.current == 1){
+                        this.totalPrices = Number(this.info.price)
+                    }else{
+                        console.log(this.current-2,this.info.many_tickets,this.info.many_tickets[this.current-2])
+                        this.totalPrices = Number(this.info.many_tickets[this.current-2].price)
+                    }
+                   
+                }
                 verifyDisCode({discount_code:this.discount_code,exhibit_id: uni.getStorageSync("exhibit_id")}).then((res)=>{
                     if(res.code ==1){
                         this.showPop =false
@@ -250,7 +240,7 @@ export default {
                     }
                 })
              },
-             topay() {
+             topay() { 
                 uni.showLoading({
 					title: "加载中",
 				});
@@ -357,9 +347,11 @@ export default {
              },
              getTicketInfo(){
                 uni.hideLoading();
-                verifyTicketBySelf({exhibit_id:uni.getStorageSync('exhibit_id')}).then(((res)=>{
-                    uni.removeStorageSync('self_write_off')
-                }))
+                if(uni.getStorageSync("self_write_off")){
+                    verifyTicketBySelf({exhibit_id:uni.getStorageSync('exhibit_id')}).then(((res)=>{
+                        uni.removeStorageSync('self_write_off')
+                    }))
+                }
                 uni.navigateTo({ url: '/pages_index/pay/info' })
             }
              }
