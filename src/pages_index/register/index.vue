@@ -207,7 +207,6 @@ export default {
     };
   },
   async onLoad(options) {
-
     uni.showLoading({
       title: "加载中",
     });

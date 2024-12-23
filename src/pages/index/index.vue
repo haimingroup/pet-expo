@@ -126,6 +126,7 @@
 		getInfo,
 		getDefault
 	} from "@/api/list.js";
+	import {getUserInfo} from "@/api/v2"
 	export default {
 		components: {
 			newsBox,
@@ -318,14 +319,30 @@
 			},
 			//跳转事件
 			navigator(url) {
-				uni.navigateTo({
-					url: url,
-				});
+				let pages =  getCurrentPages(); // 获取当前页面栈
+				let currentPage = pages[pages.length - 1]; // 获取当前页面
+				if(uni.getStorageSync('token')){
+					uni.navigateTo({
+						url: url+'?data='+currentPage.route,
+					});
+				}else{
+					uni.redirectTo({
+						url: '/pages/login/index?data='+currentPage.route
+					})
+				}
 			},
 			redirectTo(url) {
-				uni.reLaunch({
-					url: url,
-				});
+				if(uni.getStorageSync('token')){
+					uni.reLaunch({
+						url: url,
+					});
+				}else{
+					let pages =  getCurrentPages(); // 获取当前页面栈
+					let currentPage = pages[pages.length - 1]; // 获取当前页面
+					uni.redirectTo({
+						url: '/pages/login/index?data='+currentPage.route
+					})
+				}
 			},
 			toExhibitor() {
 				uni.switchTab({
@@ -346,45 +363,40 @@
 			//点击底部自定义导航栏触发事件，
 			onBeforeChange(next, index) {
 				if (index == 2) {
-					if (!uni.getStorageSync("token")) {
-						uni.redirectTo({
-							url: "/pages/login/index",
-						});
-						return;
-					}
 					if (this.lock) {
 						return;
 					} else {
 						this.lock = true;
-						if(uni.getStorageSync("exhibit_id") ==4){
-							uni.setStorageSync('webviewUrl', 'https://c.zzhaiming.com/web-reg-server/mobile/vistor-register-m.html?EID=E0000000528&target=1&orgnum=1250&pid=1393&version=1&cid=4326&ctid=86')
-							uni.navigateTo({
-								url: "/pages_index/webview/index"
-							})
-							this.lock = false;
-						}else{
 							getMyTicket({
 								exhibit_id: uni.getStorageSync("exhibit_id"),
 							}).then((res) => {
+								this.lock = false;
 								if (res.code == -1) {
-									this.lock = false;
+									// let pages =  getCurrentPages(); // 获取当前页面栈
+									// let currentPage = pages[pages.length - 1]; // 获取当前页面
+									// uni.redirectTo({
+									// 	url: '/pages/login/index?data='+currentPage.route
+									// })
 									return;
 								}
 								if (res.code == 1) {
 									uni.setStorageSync("tickerInfo", JSON.stringify(res.data));
-									this.lock = false;
-									uni.switchTab({
-										url: "/pages/center/index",
-									});
-								}
-								if (res.code == 25){
-									uni.navigateTo({
-										url: "/pages_index/exhibitorTicket/index"
-									})
-								}
-								this.lock = false;
+									if(!uni.getStorageSync('phone')){
+										getUserInfo({exhibit_id:uni.getStorageSync('exhibit_id')}).then((res) => {
+											uni.setStorageSync("phone", res.data.phone);
+											uni.switchTab({
+												url: "/pages/center/index",
+											});
+										})
+
+									}else{
+										uni.switchTab({
+											url: "/pages/center/index",
+										});
+									}
+								
+							}
 							});
-						}
 					}
 				} else {
 					next();
@@ -419,46 +431,32 @@
 			},
 			//点击门票
 			toTickerInfo() {
-				//参观门票点击事件
-				if (!uni.getStorageSync("token")) {
-					uni.redirectTo({
-						url: "/pages/login/index",
-					});
-					return;
+			//参观门票点击事件
+			if(!uni.getStorageSync('phone')){
+					getUserInfo({exhibit_id:uni.getStorageSync('exhibit_id')}).then((res) => {
+						uni.setStorageSync("phone", res.data.phone);
+					})
 				}
-				if (this.lock) {
-					return;
-				} else {
-					this.lock = true;
-					if(uni.getStorageSync("exhibit_id") ==4){
-							uni.setStorageSync('webviewUrl', 'https://c.zzhaiming.com/web-reg-server/mobile/vistor-register-m.html?EID=E0000000528&target=1&orgnum=1250&pid=1393&version=1&cid=4326&ctid=86')
-							uni.navigateTo({
-								url: "/pages_index/webview/index"
-							})
-							this.lock = false;
-						}else{
-							getMyTicket({
-								exhibit_id: uni.getStorageSync("exhibit_id"),
-							}).then((res) => {
-								if (res.code == -1) {
-									this.lock = false;
-									return;
-								}
-								if (res.code == 1) {
-									this.lock = false;
-									uni.switchTab({
-										url: "/pages/center/index",
-									});
-								}
-								if (res.code == 25){
-									uni.navigateTo({
-										url: "/pages_index/exhibitorTicket/index"
-									})
-								}
-								this.lock = false;
-							});
+			if (this.lock) {
+						return;
+			} else {
+				this.lock = true;
+					getMyTicket({
+						exhibit_id: uni.getStorageSync("exhibit_id"),
+					}).then((res) => {
+						
+						if (res.code == -1) {
+							return;
 						}
-				}
+						if (res.code == 1) {
+							uni.setStorageSync("tickerInfo", JSON.stringify(res.data))
+							uni.switchTab({
+								url: "/pages/center/index",
+							});
+					}
+					});
+			}
+				
 			},
 			//切换tab栏触发时间
 			clickTabs(e) {

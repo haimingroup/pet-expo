@@ -1,6 +1,5 @@
 <template>
   <view class="page">
-    <!-- 顶部标题栏 -->
     <u-navbar :fixed="true" bgColor="#FFFFFF00" placeholder  @leftClick="back">
 			<view class="navTitle" slot="left" :style="'color:' + titleColor"> 
           <u-icon name="arrow-left" color="#000"></u-icon>
@@ -9,7 +8,7 @@
     <view class="logo">
       <image
         class="logoImg"
-        src="../../static/tarBar/center.png"
+        src="../../static/logo.png"
         mode="aspectFit"
       ></image>
     </view>
@@ -70,6 +69,7 @@
 </template>
 <script>
 import { getPhone, getAgreement, login } from "@/api/user";
+import {getUserInfo} from "@/api/v2";
 import config from "@/utils/config";
 export default {
   data() {
@@ -80,6 +80,7 @@ export default {
       lock: false,
       isNew: false,
       userNotice: "",
+      localUrl:'',
     };
   },
   onShow() {
@@ -91,6 +92,10 @@ export default {
     }).then((res) => {
       this.userNotice = res.data.content;
     });
+  },
+  onLoad(options){
+    this.localUrl = options.data
+    console.log(this.localUrl)
   },
   methods: {
     //获取用户js-code等信息，在onShow生命周期触发
@@ -113,20 +118,12 @@ export default {
                   uni.setStorageSync("token", res.data.token);
                   let timestamp = Date.now();
                   uni.setStorageSync('defaultTime',timestamp + 259200000)
+                  console.log(uni.getStorageSync('defaultTime'))
                   } else {
                   this.isNew = true;
                 }
-              //  getOpenid({
-              //   js_code: loginRes.code,
-              //   iv: infoRes.iv,
-              //   encrypted_data: infoRes.encryptedData,
-              //   code: config.project,
-              //   }).then((res)=>{
-              //       uni.setStorageSync('openid',res.data.openid)
-              //   })
                 this.lock = true;
               });
-              
             },
           });
         },
@@ -144,6 +141,9 @@ export default {
         });
       } else {
         if (!this.isNew) {
+          getUserInfo({exhibit_id:uni.getStorageSync('exhibit_id')}).then((res) => {
+            uni.setStorageSync("phone", this.userInfo.phone);
+          });
           if(uni.getStorageSync('scene')){
 				    uni.navigateTo({
 					    url: '/pages/agreement/index?scene='+uni.getStorageSync('scene')
@@ -153,9 +153,13 @@ export default {
 									url: '/pages_index/exhibitorInfo/index?store_id'+uni.getStorageSync("store_id")
 								})
           }else{
-            uni.switchTab({
-              url: "/pages/mine/index",
-            });
+            if(this.localUrl.substring(0,6) == 'pages/'){
+              console.log(1,this.localUrl)
+              uni.switchTab({ url:'/'+this.localUrl  })
+            }else{
+              console.log(2)
+              uni.redirectTo({ url:'/'+this.localUrl  })
+            }
           }
         }
       }
@@ -164,6 +168,7 @@ export default {
     getphonenumber(e) {
       if (this.checkbox) {
         const detail = e.detail;
+        console.log('1')
         getPhone({
           unionid: uni.getStorageSync("uniond"),
           iv: detail.iv,
@@ -180,7 +185,7 @@ export default {
             uni.hideLoading();
             uni.setStorageSync("token", res.data.token);
             uni.redirectTo({
-              url: "/pages/login/userInfo",
+              url: "/pages/login/userInfo?data="+this.localUrl,
             });
           }
         });
@@ -198,8 +203,18 @@ export default {
       uni.removeStorageSync('token')
       uni.removeStorageSync('uniond')
       uni.removeStorageSync('openid')
-      uni.navigateBack({fail:()=>uni.switchTab({url:'/pages/index/index'})});
-        },
+      if(this.localUrl.substring(0,6) == 'pages/'){
+        if(this.localUrl=='pages/mine/index'){
+          uni.switchTab({ url:'/pages/index/index'  })
+        }else if(this.localUrl=='pages/nav/index'){
+          uni.redirectTo({ url:'/'+this.localUrl  })
+        }else{
+          uni.switchTab({ url:'/'+this.localUrl  })
+        }
+      }else{
+        uni.redirectTo({ url:'/'+this.localUrl  })
+      }
+    },
     close() {
       this.show = false;
     },
@@ -217,13 +232,7 @@ export default {
   padding-bottom: constant(safe-area-inset-bottom);
   padding-bottom: env(safe-area-inset-bottom);
 }
-.navTitle {
-        display: flex;
-        font-size: 36rpx;
-        font-weight: 700;
-        line-height: 36rpx;
-        text-align: left;
-    }
+
 .logo {
   width: 256rpx;
   height: 256rpx;

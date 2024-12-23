@@ -50,11 +50,7 @@
 		</view>
 		<view class="regdata" style="padding: 24rpx 32rpx; display: block">
 			<text>恭喜您成功登记，现场凭二维码核销入场。
-				{{ info.exhibit_one.name }}
-				将于{{ info.exhibit_one.start_time.slice(0, 16)
-        }}{{
-          "在" + info.exhibit_one.city_name + info.exhibit_one.lab_name
-        }}举行，期待您的到来！
+				{{ info.exhibit_one.name+'将于'+ start_time+"在" + info.exhibit_one.city_name + info.exhibit_one.lab_name}}举行，期待您的到来！
 			</text>
 		</view>
 		<view class="myTeam">
@@ -91,6 +87,7 @@
 				bgColor: uni.getStorageSync('color'),
 				qrColor: "#2CA347",
 				info: {},
+				start_time:'',
 				nowTime: "",
 				text: "邀请好友入团",
 			};
@@ -111,7 +108,7 @@
 				exhibit_id: uni.getStorageSync("exhibit_id"),
 			}).then((res)=>{
 				this.info = res.data
-				console.log(this.info);
+				this.start_time = this.info.exhibit_one.start_time.slice(0, 16)
 			})
 			if (this.info.status == 0) {
 				this.qrColor = "#000";

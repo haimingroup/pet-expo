@@ -42,11 +42,11 @@ export function apiPost(params) {
 						title: '用户登录信息过期，或未登录',
 						icon: 'none'
 					})
-					setTimeout(() => {
-						uni.redirectTo({
-							url: '/pages/login/index'
-						})
-					}, 1000)
+					let pages =  getCurrentPages(); // 获取当前页面栈
+					let currentPage = pages[pages.length - 1]; // 获取当前页面
+					uni.redirectTo({
+						url: '/pages/login/index?data='+ currentPage.route
+					})
 				}
 				else if (res.data.code == 2) {
 					console.log('新用户绑定手机号')

@@ -72,7 +72,7 @@ export function getCollectionGoods(data) {
 	})
 }
 // 个人中心的数据
-export function getInfo(data) {
+export function getUserInfo(data) {
 	return apiPost({
 		url: '/v2/user/getInfo',
 		data: data

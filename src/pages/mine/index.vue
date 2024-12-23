@@ -354,7 +354,7 @@
 
 <script>
 import {
-		getInfo,
+		getUserInfo,
 		getMyTeamInfoE
 	} from "@/api/v2";
 	import {
@@ -461,7 +461,7 @@ import {
 		},
 		onShow() {
 			const timestamp = new Date().getTime();
-			getInfo({exhibit_id:uni.getStorageSync('exhibit_id')}).then((res) => {
+			getUserInfo({exhibit_id:uni.getStorageSync('exhibit_id')}).then((res) => {
 				this.userInfo = res.data;
 				this.userInfo.avatar = this.userInfo.avatar +"?"+ timestamp
 				uni.setStorageSync("phone", this.userInfo.phone);

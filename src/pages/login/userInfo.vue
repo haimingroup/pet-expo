@@ -26,11 +26,13 @@
 				avasrc: "",
 				nickName: "",
 				showBack: "",
+				localUrl: "",
+			
 			};
 		},
 		onLoad(option) {
 			console.log(option.info+'"}');
-
+			this.localUrl = option.data
 			if (option.info) {
 				this.showBack = true;
 				let info = JSON.parse(option.info+'"}');
@@ -101,9 +103,14 @@
 								})
 							}  
 							else {
-								uni.reLaunch({
-									url: "/pages/mine/index",
-								});
+								if(this.localUrl){
+									if(this.localUrl.substring(0,6) == 'pages/'){
+										uni.switchTab({ url:'/'+this.localUrl  })
+									}else{
+										uni.redirectTo({ url:'/'+this.localUrl  })
+									}
+								}
+								
 							}
 						}, 1000);
 					}

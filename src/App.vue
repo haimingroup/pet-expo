@@ -30,37 +30,43 @@ import {getInfo} from "@/api/list.js";
 				uni.removeStorageSync('toexinfo')
 				uni.removeStorageSync('score_id')
 				const scene = decodeURIComponent(options.query.scene)
-				console.log(scene)
 				let arr = scene.split(',')
 				getInfo({exhibit_id:arr[1]}).then((res)=>{
 					uni.setStorageSync("ceilingImg", res.data.img);
 					uni.setStorageSync('color', res.data.color_main);
 					uni.setStorageSync('color_d', res.data.color_deputy);
 				})
-				if(arr[0] == 's'){
-					//展商海报
-					uni.setStorageSync('exhibit_id',arr[1])
-					uni.setStorageSync('store_id',arr[2])
-					uni.setStorageSync('team_id',arr[3])
-					uni.setStorageSync('toexinfo',1)
-				}else if(arr[0] == 'g'){
-					//产品海报
-					uni.setStorageSync('exhibit_id',arr[1])
-					uni.setStorageSync('store_id',arr[2])
-					uni.setStorageSync('goods_id',arr[3])
-				}else if(arr[0] == 'f'){
-					//积分扫码
-					uni.setStorageSync('exhibit_id',arr[1])
-					uni.setStorageSync('score_id',arr[2])
-				}else if(arr[0] == 'v'){
-					//自我核销
-					uni.setStorageSync('exhibit_id',arr[1])
-					uni.setStorageSync('self_write_off','1')
+				switch(arr[0]){
+					case s:
+						uni.setStorageSync('exhibit_id',arr[1])
+						uni.setStorageSync('store_id',arr[2])
+						uni.setStorageSync('team_id',arr[3])
+						uni.setStorageSync('toexinfo',1)
+						break;
+					case g:
+						uni.setStorageSync('exhibit_id',arr[1])
+						uni.setStorageSync('store_id',arr[2])
+						uni.setStorageSync('goods_id',arr[3])
+						break;
+					case f:
+						uni.setStorageSync('exhibit_id',arr[1])
+						uni.setStorageSync('score_id',arr[2]);
+						break;
+					case v:
+						//自我核销
+						uni.setStorageSync('exhibit_id',arr[1])
+						uni.setStorageSync('self_write_off','1')
+						break;
+					case e:
+						//自我核销
+						uni.setStorageSync('exhibit_id',arr[1])
+						uni.switchTab({ url: '/pages/index/index' })
+						break;
+					case q:
+						//电子签名
+						uni.setStorageSync('scene', arr[1])
+						break;
 				}
-				else{
-					uni.setStorageSync('scene', scene)
-				}
-				
 			}
 			if(options.query.exhibit_id){
 				uni.setStorageSync('exhibit_id',options.query.exhibit_id)

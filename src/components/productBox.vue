@@ -26,9 +26,18 @@ export default {
   
   methods: {
     navigator() {
-      uni.navigateTo({
+      let pages =  getCurrentPages(); // 获取当前页面栈
+			let currentPage = pages[pages.length - 1]; // 获取当前页面
+			if(uni.getStorageSync('token')){
+				uni.navigateTo({
           url: '/pages_index/productInfo/index?id=' + this.info.id,
-      })
+				})
+			}else{
+        uni.setStorageSync('num', 1)
+				uni.redirectTo({
+					url: '/pages/login/index?data='+currentPage.route
+				})
+			}
     },
   },
 };
