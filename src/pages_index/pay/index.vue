@@ -217,6 +217,7 @@ export default {
                 }else{
                     if(this.current == 1){
                         this.totalPrices = Number(this.info.price)
+                        
                     }else{
                         console.log(this.current-2,this.info.many_tickets,this.info.many_tickets[this.current-2])
                         this.totalPrices = Number(this.info.many_tickets[this.current-2].price)
@@ -231,7 +232,7 @@ export default {
                         if(Number(this.totalPrices)-Number(this.dmoney)<0){
                             this.totalPrices = 0
                         }else{
-                            this.totalPrices = this.totalPrices - this.dmoney
+                            this.totalPrices = (Number(this.totalPrices)*100 - Number(this.dmoney)*100)/100
                         }
                         this.textd_code = this.discount_code
                         this.haveDiscount = true

@@ -47,15 +47,14 @@ export function apiPost(params) {
 					uni.redirectTo({
 						url: '/pages/login/index?data='+ currentPage.route
 					})
-				}
-				else if (res.data.code == 2) {
+				}else if (res.data.code == 2) {
 					console.log('新用户绑定手机号')
-				} else if (res.data.code == 3) {
+				}else if (res.data.code == 3) {
 					uni.showToast({
 						title: '未成团，请先开团',
 						icon: 'none'
 					})
-				} else if (res.data.code == 22) {
+				}else if (res.data.code == 22) {
 					uni.showToast({
 						title: '请登记后查看',
 						icon: 'none'
@@ -64,18 +63,22 @@ export function apiPost(params) {
 						url: '/pages_index/register/index'
 					})
 				}else if(res.data.code == 23){
-					uni.setStorageSync('webviewUrl', res.data.data.url)
+					uni.setStorageSync('enroll_user_id',res.data.data.enroll_user_id)
 					uni.navigateTo({
-						url: "/pages_index/webview/index"
+						url:'/pages_host/questionnaire/index?question_paper_no='+res.data.data.question_paper_no+'&pay='+res.data.data.pay
+
 					})
 				}else if(res.data.code == 24){
 					uni.navigateTo({
 						url: "/pages_index/pay/index"
 					})
-				}
-				if(res.data.code == 26){
+				}else if(res.data.code == 26){
 					uni.navigateTo({
 						url: "/pages_index/register/audit"
+					})
+				}else if(res.data.code == 29){
+					uni.navigateTo({
+						url: "/pages_index/register/fail"
 					})
 				}
 				relove(res.data)

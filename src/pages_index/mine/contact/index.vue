@@ -49,6 +49,12 @@
 				</view>
 			</view>
 		</view>
+		<!-- <button class="fixed" open-type="contact" >
+			<image
+				src="https://qdhaiming.oss-cn-qingdao.aliyuncs.com/XCX/icon/CS.png"
+				mode="scaleToFill"
+			/>
+		</button> -->
 	</view>
 </template>
 <script>
@@ -81,6 +87,19 @@
 			this.from.phone = uni.getStorageSync("phone");
 		},
 		methods: {
+			toCustomerServicePages: function () {   
+				try {
+					wx.openCustomerServiceChat({
+						extInfo: {
+						url: "https://work.weixin.qq.com/kfid/kfcd59a47c37be34fa8" //客服ID
+						},
+						corpId: 'ww93bc356d74b46b2f', //企业微信ID
+						success(res) {}
+					})
+					} catch (error) {
+					showToast("请更新至微信最新版本")
+					}
+				},
 			submit() {
 				inquiry(this.from).then((res) => {
 					if (res.code == 0) {
@@ -209,4 +228,22 @@
 			}
 		}
 	}
+	.fixed{
+		position: fixed;
+		width: 100rpx;
+		height: 100rpx;
+		right: 20rpx;
+		border-radius: 100rpx;
+		top: 50vh;
+		padding: 0;
+		z-index: 99;
+		image{
+			width: 100rpx;
+			height: 100rpx;
+			display: flex;
+		}
+	}
+	button::after {
+    border: none;
+  	}
 </style>

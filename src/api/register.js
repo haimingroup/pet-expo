@@ -28,7 +28,7 @@ export function getFields(data) {
 // 观众登记 
 export function addTicket(data) {
     return apiPost({
-        url: '/v2/user/addTicket',
+        url: '/v2/ticket/addTicket',
         data: data
     })
 }
@@ -79,6 +79,13 @@ export function getAreaJson(data) {
 export function proUserUp(data) {
     return apiPost({
         url: '/v2/system/proUserUp',
+        data: data
+    })
+}
+// 专业观众修改状态
+export function editProStatus(data) {
+    return apiPost({
+        url: '/v2/ticket/editProStatus',
         data: data
     })
 }

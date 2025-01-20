@@ -183,7 +183,8 @@ export default {
             });
           } else {
             uni.hideLoading();
-            uni.setStorageSync("token", res.data.token);
+            uni.setStorageSync("token", res.data.token)
+            uni.setStorageSync('defaultTime',this.defaultTime + 259200000)
             uni.redirectTo({
               url: "/pages/login/userInfo?data="+this.localUrl,
             });

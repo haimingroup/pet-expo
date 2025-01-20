@@ -277,7 +277,9 @@
 						this.navigator('/pages_index/jgInfo/index?id=' + item.article_id + '&title=' + item.page_title);
 						break;
 					case 1:
-						this.navigator('/pages/news/index');
+						uni.navigateTo({
+							url: '/pages/news/index'
+						})
 						break;
 					case 2:
 						uni.switchTab({
@@ -292,9 +294,11 @@
 						uni.setStorageSync('current', 1)
 						this.toExhibitor()
 						break;
-					case 5:
-						uni.setStorageSync('get_contest', 1)
-						this.navigator('/pages_platform/match/rank')
+					case 7:
+						this.navigator('/pages_index/consume/index?id=' + item.article_id)
+						break;
+					case 8:
+						this.toWeb(item.url)
 						break;
 				}
 
@@ -438,24 +442,28 @@
 					})
 				}
 			if (this.lock) {
-						return;
+					return;
 			} else {
 				this.lock = true;
 					getMyTicket({
 						exhibit_id: uni.getStorageSync("exhibit_id"),
 					}).then((res) => {
-						
-						if (res.code == -1) {
+						this.lock = false;
+						if(res.code == 0||res.code == -1){
+							uni.showToast({
+								title: res.msg,
+								icon: 'none',
+								mask: true
+							})
 							return;
 						}
 						if (res.code == 1) {
-							uni.setStorageSync("tickerInfo", JSON.stringify(res.data))
 							uni.switchTab({
-								url: "/pages/center/index",
+									url: "/pages/center/index",
 							});
-					}
-					});
-			}
+						}
+					})
+				}
 				
 			},
 			//切换tab栏触发时间

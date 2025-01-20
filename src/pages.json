@@ -82,61 +82,67 @@
 				"path": "client/client",
 				"style": {
 					"navigationStyle": "custom",
-					"navigationBarTitleText": "海名口腔展"
+					"navigationBarTitleText": "海名宠物展"
 				}
 			},
 			{
 				"path": "check/index",
 				"style": {
 					"navigationStyle": "custom",
-					"navigationBarTitleText": "海名口腔展"
+					"navigationBarTitleText": "海名宠物展"
 				}
 			},
 			{
 				"path": "check/match",
 				"style": {
 					"navigationStyle": "custom",
-					"navigationBarTitleText": "海名口腔展"
+					"navigationBarTitleText": "海名宠物展"
 				}
 			},
 			{
 				"path": "check/stone",
 				"style": {
 					"navigationStyle": "custom",
-					"navigationBarTitleText": "海名口腔展"
+					"navigationBarTitleText": "海名宠物展"
 				}
 			},
 			{
 				"path": "check/product",
 				"style": {
 					"navigationStyle": "custom",
-					"navigationBarTitleText": "海名口腔展"
+					"navigationBarTitleText": "海名宠物展"
 				}
 			},
 			{
 				"path": "invite/index",
 				"style": {
 					"navigationStyle": "custom",
-					"navigationBarTitleText": "海名口腔展"
+					"navigationBarTitleText": "海名宠物展"
 				}
 			},
 			{
 				"path": "cmeiban/index",
 				"style": {
 					"navigationStyle": "custom",
-					"navigationBarTitleText": "海名口腔展"
+					"navigationBarTitleText": "海名宠物展"
 				}
 			},{
 				"path": "verification/index",
 				"style": {
 					"navigationStyle": "custom",
-					"navigationBarTitleText": "海名口腔展"
+					"navigationBarTitleText": "海名宠物展"
 				}
 			},{
 				"path": "verification/info",
 				"style": {
 					"navigationStyle": "custom",
-					"navigationBarTitleText": "海名口腔展"
+					"navigationBarTitleText": "海名宠物展"
+				}
+			},{
+				"path": "questionnaire/index",
+				"style": {
+					"navigationStyle": "custom",
+					"navigationBarTitleText": "海名宠物展"
 				}
 			}
 		]
@@ -155,20 +161,20 @@
 					"path": "pay/index",
 					"style": {
 						"navigationStyle": "custom",
-						"navigationBarTitleText": "海名口腔展"
+						"navigationBarTitleText": "海名宠物展"
 					}
 				},{
 					"path": "pay/list",
 					"style": {
 						"navigationStyle": "custom",
-						"navigationBarTitleText": "海名口腔展"
+						"navigationBarTitleText": "海名宠物展"
 					}
 				},
 				{
 					"path": "pay/info",
 					"style": {
 						"navigationStyle": "custom",
-						"navigationBarTitleText": "海名口腔展"
+						"navigationBarTitleText": "海名宠物展"
 					}
 				},
 				{
@@ -292,6 +298,13 @@
 				},
 				{
 					"path": "register/audit",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "海名宠物展"
+					}
+				},
+				{
+					"path": "register/fail",
 					"style": {
 						"navigationStyle": "custom",
 						"navigationBarTitleText": "海名宠物展"

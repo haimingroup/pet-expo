@@ -4,51 +4,67 @@
 			<image class="userAva" style="margin: 0" :src="avasrc ? avasrc : '../../static/mine/Account.svg'"
 				mode="aspectFit" />
 		</button>
-		<text class="hint">点击上方更改头像 <text style="color: red">*</text>
-		</text>
+		<text class="hint">点击上方更改头像</text>
 		<view class="input">
 			<input placeholder="请输入昵称" type="nickname" v-model="nickName" id="text-inp" @input="onInputNickname" />
 		</view>
-		<button class="btn" style=" background: #004098" @tap="clickBtn">提交</button>
-		<button class="btn" v-if="showBack" style="background: #ccc; bottom: 230px" @tap="back">
+		<button class="btn" style=" background: #004098;bottom:49vh" @tap="clickBtn">提交</button>
+		<button class="btn" v-if="showBack" style="background: #ccc; bottom: 41vh" @tap="back">
 			返回
 		</button>
 	</view>
 </template>
 <script>
-	import {
-		editInfo
-	} from "@/api/user.js";
+	import {editInfo} from "@/api/user.js";
+	import {getUserInfo} from "@/api/v2";
 	export default {
 		data() {
 			return {
 				themeColors: uni.getStorageSync('color'),
 				avasrc: "",
-				nickName: "",
+				nickName: "",	
 				showBack: "",
 				localUrl: "",
-			
 			};
 		},
 		onLoad(option) {
-			console.log(option.info+'"}');
-			this.localUrl = option.data
 			if (option.info) {
 				this.showBack = true;
-				let info = JSON.parse(option.info+'"}');
-				this.nickName = info.nickname;
-				this.avasrc = info.avatar;
+				getUserInfo({exhibit_id:uni.getStorageSync('exhibit_id')}).then((res) => {
+					this.nickName = res.data.nickname;
+					this.urlToBase64(res.data.avatar).then(base=>{
+						this.avasrc = base
+					})
+				});
+				
 			}
 			
 		},
 		methods: {
+			urlToBase64(url) {
+				return new Promise((resolve, reject) => {
+					uni.request({
+					url: url, // 图片链接
+					method: 'GET',
+					responseType: 'arraybuffer', // 设置响应类型为arraybuffer以接收二进制数据
+					success: (res) => {
+						if (res.statusCode === 200) {
+						let base64 = uni.arrayBufferToBase64(res.data); // 将arraybuffer转换为base64
+						base64 = 'data:image/jpeg;base64,' + base64; // 添加数据头部，根据实际图片格式修改
+						resolve(base64);
+						} else {
+						reject(new Error('Failed to fetch the image'));
+						}
+					},
+					fail: (err) => {
+						reject(err);
+					}
+					});
+				});
+			},
 			back() {
 				uni.navigateBack({
-					delta: 1,
-					fail:()=>{
-						uni.switchTab('/pages/index/index')
-					}
-					
+					delta: 1
 				});
 			},
 			chooseavatar(e) {
@@ -72,13 +88,11 @@
 						.exec((res) => {
 							const nickName = res?.[0]?.value;
 							this.nickName = nickName;
-							console.log("昵称", nickName);
 						});
 				}
 			},
 			clickBtn() {
-			
-				editInfo({
+				 editInfo({
 					nickname: this.nickName,
 					avatar: this.avasrc,
 				}).then((res) => {
@@ -103,14 +117,7 @@
 								})
 							}  
 							else {
-								if(this.localUrl){
-									if(this.localUrl.substring(0,6) == 'pages/'){
-										uni.switchTab({ url:'/'+this.localUrl  })
-									}else{
-										uni.redirectTo({ url:'/'+this.localUrl  })
-									}
-								}
-								
+								uni.switchTab({ url: '/pages/mine/index' })
 							}
 						}, 1000);
 					}
@@ -156,7 +163,6 @@
 		border-radius: 100px;
 		position: fixed;
 		padding: 0 180rpx;
-		bottom: 300px;
 		margin: 0 auto;
 		color: #fff;
 	}

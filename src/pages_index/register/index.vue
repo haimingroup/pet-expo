@@ -113,7 +113,7 @@
             ></u-picker>
           </u-form-item>
             <!-- 单选 -->
-            <u-form-item label="观众身份" prop="phone" required>
+            <u-form-item  v-show="showAud" label="观众身份" prop="phone" required>
               <u-radio-group
                 v-model="from.type"
                 placement="row"
@@ -175,7 +175,7 @@
 </template>
    <script>
 import { getFields, addTicket, getAreaJson, getCountry,proUserUp } from "@/api/register";
-import {findTicket} from '@/api/v2'
+import {findTicket,getUserInfo} from '@/api/v2'
 import {verifyTicketBySelf} from '@/api/v2'
 import config from '@/utils/config.js'
 export default {
@@ -204,6 +204,7 @@ export default {
       fileList1: [],
       fileList2: [],
       showUPload: false,
+      showAud: false,
     };
   },
   async onLoad(options) {
@@ -217,6 +218,9 @@ export default {
         title: "请登记后查看",
         icon: "none",
       });
+      if(res.code == 27){
+        this.showAud = true
+      }
       this.showList = res.data
       this.showList.map((item, index) => {
         this.from[item.exhibit_field_one.field_name] = "";
@@ -229,7 +233,17 @@ export default {
           this.showList.splice(index, 1);
         }
         if (item.exhibit_field_one.field_name == "phone") {
-          this.from["phone"] = uni.getStorageSync("phone");
+          if (item.exhibit_field_one.field_name == "phone") {
+          if(!uni.getStorageSync('phone')){
+						getUserInfo({exhibit_id:uni.getStorageSync('exhibit_id')}).then((res) => {
+              this.from["phone"] =res.data.phone
+							uni.setStorageSync("phone", res.data.phone);
+					})
+					}else{
+            this.from["phone"] = uni.getStorageSync("phone");
+          }
+
+        }
         }
       });
       this.from['type'] = 0
@@ -428,29 +442,49 @@ export default {
           })
           return;
         }else if(res.code == 1){
+          console.log('进来')
           if(uni.getStorageSync("team_id")){
             uni.removeStorageSync("team_id");
             uni.removeStorageSync('toexinfo')
             uni.hideLoading();
           }
           if(res.data.url){
+            console.log('url')
             uni.setStorageSync('webviewUrl', res.data.url)
 								uni.navigateTo({
 									url: "/pages_index/webview/index"
 							})
-          }else if(res.data.act == 1){
+          }
+          else if(res.data.question_paper_no){
+            console.log('question_paper_no')
+            uni.setStorageSync('enroll_user_id',res.data.enroll_user_id)
             uni.navigateTo({
-              url:'/pages_index/pay/list'
+              url:'/pages_host/questionnaire/index?question_paper_no='+res.data.data.question_paper_no+'&pay='+res.data.data.pay
             })
-          }else if(res.data.pay == 1){
+          }
+          else if(res.data.act == 1){
+            console.log('act')
+              uni.setStorageSync('enroll_user_id',res.data.enroll_user_id)
+              uni.navigateTo({
+                url:'/pages_index/pay/list?question_paper_no='+res.data.question_paper_no
+              })
+            }
+          else if(res.data.pay == 1){
             uni.navigateTo({
               url:'/pages_index/pay/index'
             })
-          }else if(uni.getStorageSync("self_write_off")){
+          }
+          else if(uni.getStorageSync("self_write_off")){
             verifyTicketBySelf({exhibit_id:uni.getStorageSync('exhibit_id')}).then(((res)=>{
                 uni.removeStorageSync('self_write_off')
-                uni.switchTab({ url: '/pages/center/index' })
+                uni.switchTab({
+							    url: "/pages/center/index",
+						    });
             }))
+          }else{
+            uni.navigateTo({
+							url: "/pages/center/index",
+						});
           }
       }
       }).catch();
