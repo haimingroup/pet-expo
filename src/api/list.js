@@ -119,3 +119,10 @@ export function getSlider(data) {
         data: data
     })
 }
+// 门票配置详情 
+export function getTicketListInfo(data) {
+    return apiPost({
+        url: '/v3/ticket/getTicketListInfo',
+        data: data
+    })
+}

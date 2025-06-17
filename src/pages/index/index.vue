@@ -325,15 +325,9 @@
 			navigator(url) {
 				let pages =  getCurrentPages(); // 获取当前页面栈
 				let currentPage = pages[pages.length - 1]; // 获取当前页面
-				if(uni.getStorageSync('token')){
-					uni.navigateTo({
-						url: url+'?data='+currentPage.route,
-					});
-				}else{
-					uni.redirectTo({
-						url: '/pages/login/index?data='+currentPage.route
-					})
-				}
+				uni.navigateTo({
+					url: url+'?data='+currentPage.route,
+				});
 			},
 			redirectTo(url) {
 				if(uni.getStorageSync('token')){

@@ -113,7 +113,7 @@
             ></u-picker>
           </u-form-item>
             <!-- 单选 -->
-            <u-form-item  v-show="showAud" label="观众身份" prop="phone" required>
+            <u-form-item v-if="showAud" label="观众身份" prop="phone" required>
               <u-radio-group
                 v-model="from.type"
                 placement="row"
@@ -170,7 +170,15 @@
       </view>
       <view class="subBtn" :style="'background:'+ themeColors" @tap="submit"> 提交 </view>
     </view>
-    <u-modal :show="showModal" buttonReverse showCancelButton confirmText="找回门票" :content='content' @confirm="modalConfirm" @cancel="showModal = false"></u-modal>
+    <!-- <u-modal :show="showModal" buttonReverse showCancelButton confirmText="找回门票" :content='content' @confirm="modalConfirm" @cancel="showModal = false"></u-modal> -->
+    <u-modal :show="showY" buttonReverse showCancelButton confirmText="联系客服" :content='contentY' @confirm="modalConfirmY" @cancel="showY = false">
+      <view class="slot-content">
+        <view>
+          <view style="text-align: center;">抱歉,认证失败!</view>
+          <view style="text-align: center;">请您联系客服:15093310718</view>
+        </view>
+			</view>
+    </u-modal>
   </view>
 </template>
    <script>
@@ -182,6 +190,7 @@ export default {
   data() {
     return {
       content:'如若您在其他渠道登记过信息,请选择找回门票,否则请点击取消继续登记。',
+      contentY:'抱歉,认证失败!请您联系客服:15093310718',
       themeColors: uni.getStorageSync('color'),
       imgSrc: uni.getStorageSync("ceilingImg"),
       show: false,
@@ -204,13 +213,18 @@ export default {
       fileList1: [],
       fileList2: [],
       showUPload: false,
-      showAud: false,
+      showAud:false,
+      showY: false,
     };
   },
   async onLoad(options) {
+    this.from.exhibit_ticket_id = options.id
     uni.showLoading({
       title: "加载中",
     });
+    getUserInfo({exhibit_id:uni.getStorageSync('exhibit_id')}).then((res) => {
+				uni.setStorageSync("phone",res.data.phone);
+		});
     await getFields({
       exhibit_id: uni.getStorageSync("exhibit_id"),
     }).then((res) => {
@@ -218,34 +232,30 @@ export default {
         title: "请登记后查看",
         icon: "none",
       });
-      if(res.code == 27){
+      if(res.code ==27){
         this.showAud = true
       }
       this.showList = res.data
-      this.showList.map((item, index) => {
+      let tempList = res.data;
+      tempList.forEach((item) => {
+        console.log(item.exhibit_field_one.field_name, item.exhibit_field_one.field_label)
         this.from[item.exhibit_field_one.field_name] = "";
         if (item.exhibit_field_one.field_name == "area_code") {
           this.showArea = true;
-          this.showList.splice(index, 1);
         }
         if (item.exhibit_field_one.field_name == "country") {
           this.showcountry = true;
-          this.showList.splice(index, 1);
         }
         if (item.exhibit_field_one.field_name == "phone") {
-          if (item.exhibit_field_one.field_name == "phone") {
-          if(!uni.getStorageSync('phone')){
-						getUserInfo({exhibit_id:uni.getStorageSync('exhibit_id')}).then((res) => {
-              this.from["phone"] =res.data.phone
-							uni.setStorageSync("phone", res.data.phone);
-					})
-					}else{
-            this.from["phone"] = uni.getStorageSync("phone");
-          }
-
-        }
+          this.from["phone"] = uni.getStorageSync("phone");
         }
       });
+      
+      // 过滤掉不需要显示的字段
+      this.showList = tempList.filter(item => 
+        item.exhibit_field_one.field_name !== "area_code" && 
+        item.exhibit_field_one.field_name !== "country"
+      );
       this.from['type'] = 0
       uni.hideLoading();
     });
@@ -282,6 +292,11 @@ export default {
           uni.switchTab({ url: '/pages/center/index' })
         } 
       })
+    },
+    modalConfirmY(){
+      uni.makePhoneCall({
+					phoneNumber: '15093310718', //仅为示例
+				});
     },
     radChange(n){
         if(n ==1){
@@ -406,7 +421,7 @@ export default {
     confirm(e) {
       this.locationText = "";
       for (let i = 0; i < e.value.length; i++) {
-        this.locationText = this.locationText + " " + e.value[i].name;
+        this.locationText = this.locationText + " " + e.value[i].name;              
       }
       this.from["area_code"] = e.value[e.value.length - 1].code;
       this.show = false;
@@ -428,11 +443,33 @@ export default {
       uni.showLoading({
         title: "加载中",
       });
+      const currentYear = new Date().getFullYear();
+      if(this.from.id_type == '1'){
+        if(this.from.id_num){
+          let year = this.from.id_num.substring(6,10)
+          let num = currentYear - year
+          if(18>=num ||num>=60){
+            this.showY = true;
+            uni.hideLoading();
+            return
+          }
+        }else{
+            uni.showToast({
+              title:'未输入证件号',
+              icon:'none',
+          })
+          uni.hideLoading();
+          return
+        }
+        
+      }
       if (uni.getStorageSync("team_id")) {
         this.from["enroll_team_id"] = uni.getStorageSync("team_id");
       }
       this.from.exhibit_id = uni.getStorageSync("exhibit_id");
-      this.from.openid = uni.getStorageSync("openid");
+      if(uni.getStorageSync("openid")){
+        this.from.openid = uni.getStorageSync("openid");
+      }
       addTicket(this.from).then((res) => {
         if (res.code == 0) {
           uni.hideLoading();
@@ -442,49 +479,41 @@ export default {
           })
           return;
         }else if(res.code == 1){
-          console.log('进来')
+          uni.setStorageSync('exhibit_ticket_id', res.data.exhibit_ticket_id)
+          
           if(uni.getStorageSync("team_id")){
             uni.removeStorageSync("team_id");
             uni.removeStorageSync('toexinfo')
             uni.hideLoading();
           }
           if(res.data.url){
-            console.log('url')
             uni.setStorageSync('webviewUrl', res.data.url)
 								uni.navigateTo({
 									url: "/pages_index/webview/index"
 							})
-          }
-          else if(res.data.question_paper_no){
-            console.log('question_paper_no')
+            }
+          else if(res.data.act == 1){
             uni.setStorageSync('enroll_user_id',res.data.enroll_user_id)
             uni.navigateTo({
-              url:'/pages_host/questionnaire/index?question_paper_no='+res.data.data.question_paper_no+'&pay='+res.data.data.pay
+              url:'/pages_index/pay/list?question_paper_no='+res.data.question_paper_no
             })
           }
-          else if(res.data.act == 1){
-            console.log('act')
-              uni.setStorageSync('enroll_user_id',res.data.enroll_user_id)
-              uni.navigateTo({
-                url:'/pages_index/pay/list?question_paper_no='+res.data.question_paper_no
-              })
-            }
-          else if(res.data.pay == 1){
+          else if(res.data.question_paper_no){
+            uni.setStorageSync('enroll_user_id',res.data.enroll_user_id)
+            uni.navigateTo({
+              url:'/pages_host/questionnaire/index?question_paper_no='+res.data.question_paper_no+'&pay='+res.data.pay
+            })
+          }else if(res.data.pay == 1){
             uni.navigateTo({
               url:'/pages_index/pay/index'
             })
-          }
-          else if(uni.getStorageSync("self_write_off")){
+          }else if(uni.getStorageSync("self_write_off")){
             verifyTicketBySelf({exhibit_id:uni.getStorageSync('exhibit_id')}).then(((res)=>{
                 uni.removeStorageSync('self_write_off')
-                uni.switchTab({
-							    url: "/pages/center/index",
-						    });
+                uni.switchTab({ url: '/pages/center/index' })
             }))
           }else{
-            uni.navigateTo({
-							url: "/pages/center/index",
-						});
+            uni.switchTab({ url: '/pages/center/index' })
           }
       }
       }).catch();

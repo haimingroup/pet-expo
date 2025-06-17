@@ -28,7 +28,7 @@ export function getFields(data) {
 // 观众登记 
 export function addTicket(data) {
     return apiPost({
-        url: '/v2/ticket/addTicket',
+        url: '/v3/ticket/addTicket',
         data: data
     })
 }
@@ -36,7 +36,7 @@ export function addTicket(data) {
 // 门票详情 
 export function getMyTicket(data) {
     return apiPost({
-        url: '/v2/user/getMyTicket',
+        url: '/v3/ticket/getMyTicket',
         data: data
     })
 }
@@ -86,6 +86,28 @@ export function proUserUp(data) {
 export function editProStatus(data) {
     return apiPost({
         url: '/v2/ticket/editProStatus',
+        data: data
+    })
+}
+//获取门票列表
+export function getTicketList(data) {
+    return apiPost({
+        url: '/v3/ticket/getTicketList',
+        data: data
+    })
+}
+//落地页数据
+
+export function getLandingPage(data) {
+    return apiPost({
+        url: '/v3/team/getLandingPage',
+        data: data
+    })
+}
+//登记完弹窗页面分享数据
+export function getShareData(data) {
+    return apiPost({
+        url: '/v3/team/getShareData',
         data: data
     })
 }

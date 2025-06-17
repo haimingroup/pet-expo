@@ -30,7 +30,7 @@
                         {{item.user_info_one.name}}
                     </view>
                     <view class="one" style=" text-align: start;">
-                        {{item.user_info_one.position}}
+                        {{''}}
                     </view>
                     <view class="one" style=" text-align: center;">
                         {{item.created_at.slice(5)}}
@@ -46,9 +46,9 @@
                             v-for="item1,index1 in infoList"
                             :key="index1"
                             @tap="toInfo(item1)"
-                            :title="item1.user_info_one.name+' / '+item1.user_info_one.position"
+                            :title="item1.user_info_one.name+' / '+item1.user_info_one.company_name"
                             :label="item1.created_at.slice(5)"
-                            center
+                            center 
                         >
                             <view slot="value" :style="'color:'+themeColors">查看详情 </view>
                         </u-cell>

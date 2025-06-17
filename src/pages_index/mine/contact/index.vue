@@ -49,12 +49,12 @@
 				</view>
 			</view>
 		</view>
-		<!-- <button class="fixed" open-type="contact" >
+		<button class="fixed" open-type="contact" >
 			<image
 				src="https://qdhaiming.oss-cn-qingdao.aliyuncs.com/XCX/icon/CS.png"
 				mode="scaleToFill"
 			/>
-		</button> -->
+		</button>
 	</view>
 </template>
 <script>
@@ -91,9 +91,9 @@
 				try {
 					wx.openCustomerServiceChat({
 						extInfo: {
-						url: "https://work.weixin.qq.com/kfid/kfcd59a47c37be34fa8" //客服ID
+						url: "https://work.weixin.qq.com/kfid/kfc7f4aed61e78ddd5d" //客服ID
 						},
-						corpId: 'ww93bc356d74b46b2f', //企业微信ID
+						corpId: 'ww1d5a578da59f9d36', //企业微信ID
 						success(res) {}
 					})
 					} catch (error) {

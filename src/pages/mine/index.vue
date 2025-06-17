@@ -80,7 +80,7 @@
           class="task"
           @tap="navigator('/pages_index/pay/list')"
         >
-          <u-icon name="scan" color="#7d7d7d" size="60"></u-icon>
+          <u-icon name="bell-fill" color="gold" size="60"></u-icon>
         </view>
       </view>
 
