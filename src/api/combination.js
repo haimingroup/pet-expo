@@ -27,7 +27,7 @@ export function enrollActivities(data) {
 //门票微信支付数据
 export function ticketByWxPay(data) {
     return apiPost({
-        url: '/v2/ticket/ticketByWxPay',
+        url: '/v3/ticket/ticketByWxPay',
         data: data
     })
 }

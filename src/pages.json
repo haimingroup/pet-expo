@@ -158,6 +158,20 @@
 					}
 				},
 				{
+					"path": "admission/index",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "海名宠物展"
+					}
+				},
+				{
+					"path": "admission/info",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "海名宠物展"
+					}
+				},
+				{
 					"path": "pay/index",
 					"style": {
 						"navigationStyle": "custom",

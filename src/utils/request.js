@@ -55,12 +55,13 @@ export function apiPost(params) {
 						icon: 'none'
 					})
 				}else if (res.data.code == 22) {
+					//更改到门票列表
 					uni.showToast({
 						title: '请登记后查看',
 						icon: 'none'
 					})
 					uni.navigateTo({
-						url: '/pages_index/register/index'
+						url: '/pages_index/admission/index'
 					})
 				}else if(res.data.code == 23){
 					uni.setStorageSync('enroll_user_id',res.data.data.enroll_user_id)
@@ -69,9 +70,17 @@ export function apiPost(params) {
 
 					})
 				}else if(res.data.code == 24){
-					uni.navigateTo({
-						url: "/pages_index/pay/index"
-					})
+					console.log(res.data.data);
+					if(res.data.data.exhibit_ticket_id!==''){
+						uni.navigateTo({
+							url: "/pages_index/pay/index?id="+res.data.data.exhibit_ticket_id
+						})
+					}else{
+						uni.navigateTo({
+							url: "/pages_index/pay/index"
+						})
+					}
+					
 				}else if(res.data.code == 26){
 					uni.navigateTo({
 						url: "/pages_index/register/audit"

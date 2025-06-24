@@ -36,36 +36,39 @@ import {getInfo} from "@/api/list.js";
 					uni.setStorageSync('color', res.data.color_main);
 					uni.setStorageSync('color_d', res.data.color_deputy);
 				})
-				switch(arr[0]){
-					case s:
-						uni.setStorageSync('exhibit_id',arr[1])
-						uni.setStorageSync('store_id',arr[2])
-						uni.setStorageSync('team_id',arr[3])
-						uni.setStorageSync('toexinfo',1)
-						break;
-					case g:
-						uni.setStorageSync('exhibit_id',arr[1])
-						uni.setStorageSync('store_id',arr[2])
-						uni.setStorageSync('goods_id',arr[3])
-						break;
-					case f:
-						uni.setStorageSync('exhibit_id',arr[1])
-						uni.setStorageSync('score_id',arr[2]);
-						break;
-					case v:
-						//自我核销
-						uni.setStorageSync('exhibit_id',arr[1])
-						uni.setStorageSync('self_write_off','1')
-						break;
-					case e:
-						//自我核销
-						uni.setStorageSync('exhibit_id',arr[1])
-						uni.switchTab({ url: '/pages/index/index' })
-						break;
-					case q:
-						//电子签名
-						uni.setStorageSync('scene', arr[1])
-						break;
+				// 提取公共的 exhibit_id 设置逻辑
+				uni.setStorageSync('exhibit_id', arr[1]);
+
+				// 定义每个 case 的特定逻辑
+				const caseHandlers = {
+				s: () => {
+					uni.setStorageSync('store_id', arr[2]);
+					uni.setStorageSync('team_id', arr[3]);
+					uni.setStorageSync('toexinfo', 1);
+				},
+				g: () => {
+					uni.setStorageSync('store_id', arr[2]);
+					uni.setStorageSync('goods_id', arr[3]);
+				},
+				f: () => {
+					uni.setStorageSync('score_id', arr[2]);
+				},
+				v: () => {
+					// 自我核销
+					uni.setStorageSync('self_write_off', '1');
+				},
+				e: () => {
+					// 展会主页
+					uni.switchTab({ url: '/pages/index/index' });
+				},
+				q: () => {
+					// 电子签名
+					uni.setStorageSync('scene', arr[1]);
+				}
+				};
+				// 根据 arr[0] 执行对应的逻辑
+				if (caseHandlers[arr[0]]) {
+					caseHandlers[arr[0]]();
 				}
 			}
 			if(options.query.exhibit_id){
