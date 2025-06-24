@@ -459,7 +459,7 @@ export default {
             console.log('question_paper_no')
             uni.setStorageSync('enroll_user_id',res.data.enroll_user_id)
             uni.navigateTo({
-              url:'/pages_host/questionnaire/index?question_paper_no='+res.data.data.question_paper_no+'&pay='+res.data.data.pay
+              url:'/pages_host/questionnaire/index?question_paper_no='+res.data.question_paper_no+'&pay='+res.data.pay
             })
           }
           else if(res.data.act == 1){
