@@ -63,7 +63,7 @@ export default {
                     })
         },
         contactUs(){
-            uni.navigateTo({ url: '/pages_index/mine/contact/' })
+            uni.navigateTo({ url: '/pages_index/mine/contact/index' })
         },
        back(){
            uni.switchTab({ url: '/pages/index/index' })

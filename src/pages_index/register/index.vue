@@ -495,7 +495,11 @@ export default {
           else if(res.data.act == 1){
             uni.setStorageSync('enroll_user_id',res.data.enroll_user_id)
             uni.navigateTo({
+<<<<<<< HEAD
+              url:'/pages_host/questionnaire/index?question_paper_no='+res.data.question_paper_no+'&pay='+res.data.pay
+=======
               url:'/pages_index/pay/list?question_paper_no='+res.data.question_paper_no
+>>>>>>> 50b03292e8f399fada79fe5799d500defc21ae3d
             })
           } else if(res.data.poll == 1){
             uni.setStorageSync('enroll_user_id',res.data.enroll_user_id)
