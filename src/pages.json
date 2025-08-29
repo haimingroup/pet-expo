@@ -151,6 +151,20 @@
 			"root": "pages_index",
 			"pages": [
 				{
+					"path": "vote/index",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "海名宠物展"
+					}
+				},
+				{
+					"path": "vote/info",
+					"style": {
+						"navigationStyle": "custom",
+						"navigationBarTitleText": "海名宠物展"
+					}
+				},
+				{
 					"path": "search/index",
 					"style": {
 						"navigationStyle": "custom",

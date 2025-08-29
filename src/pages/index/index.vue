@@ -61,7 +61,10 @@
 					</u-grid-item>
 				</u-grid>
 			</view>
-
+			<h2 style="font-weight: 700;margin:30rpx 0 0 0">投票入口</h2>
+			<view class="box" v-for="item in pollList" :key="item.poll_id" style="margin-top: 30rpx; height:  228rpx" @tap="toVote(item.poll_id)">
+				<image style="width: 100%; height: 228rpx" :src="item.img" :alt="item.title" mode="scaleToFill" />
+			</view>
 			<view class="box"  style="margin-top: 30rpx; height: 228rpx" @tap="toWeb(homeList.adv.adv.url)">
 				<image style="width: 100%; height: 228rpx" :src="homeList.adv.adv.img" mode="scaleToFill" />
 			</view>
@@ -127,6 +130,8 @@
 		getDefault
 	} from "@/api/list.js";
 	import {getUserInfo} from "@/api/v2"
+	import { getPollList } from "@/pages_index/vote/api.js";
+
 	export default {
 		components: {
 			newsBox,
@@ -188,7 +193,9 @@
 				loadData: {
 					id: 0,
 					keyWord: '',
-				}
+				},
+				pollList: [],
+
 			};
 		},
 		onShow() {
@@ -218,6 +225,11 @@
 		},
 		onLoad(options) {
 			this.getExhibitorList()
+			getPollList({
+				exhibit_id:  uni.getStorageSync("exhibit_id"),
+			}).then((res) => {
+				this.pollList = res.data
+			})
 			newsGetCate({
 					obj_id: config.obj_id,
 				}).then((res) => {
@@ -303,7 +315,10 @@
 				}
 
 			},
-			
+				//投票入口
+			toVote(id){
+				uni.navigateTo({ url: '/pages_index/vote/index?id=' + id })
+			},
 			//智会行小程序跳转
 			toOther(){
 				// 暂缓未获得			
